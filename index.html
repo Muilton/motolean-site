@@ -131,6 +131,55 @@ section { padding-block: clamp(100px, 13vw, 190px); }
 .stats span { display: block; margin-top: 12px; font-size: 14px; color: var(--stone); max-width: 24ch; }
 @media (max-width: 760px) { .stats { grid-template-columns: 1fr 1fr; } .stats div:nth-child(3) { padding-left: 0; border-left: 0; } .stats div:nth-child(n+3) { border-top: 1px solid var(--hair); } }
 
+/* voice coach */
+.voice { position: relative; overflow: hidden; border-block: 1px solid var(--hair); background: radial-gradient(70% 60% at 78% 40%, rgba(255, 162, 74, .09), transparent 70%), radial-gradient(50% 50% at 20% 80%, rgba(95, 208, 255, .06), transparent 70%), var(--ink); }
+.voice-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(40px, 6vw, 90px); align-items: center; }
+.voice h2 { font-size: clamp(34px, 4.6vw, 66px); }
+.voice h2 em { font-style: normal; color: var(--c-right); text-shadow: 0 0 28px rgba(255, 162, 74, .35); }
+.live-chip { display: inline-flex; align-items: center; gap: 10px; margin-top: 28px; padding: 9px 14px; border: 1px solid rgba(255, 162, 74, .45); border-radius: 999px; font: 500 11.5px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--bone); }
+.live-chip i { width: 7px; height: 7px; border-radius: 50%; background: var(--c-right); box-shadow: 0 0 10px var(--c-right); animation: blink 1.4s steps(2) infinite; }
+.feed { position: relative; border: 1px solid var(--hair-2); border-radius: 22px; padding: 22px 22px 18px; background: linear-gradient(160deg, rgba(28, 27, 25, .9), rgba(12, 12, 12, .92)); box-shadow: 0 40px 100px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .05); }
+.feed-top { display: flex; justify-content: space-between; align-items: center; font: 500 10.5px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--stone); }
+.feed-top .on { display: inline-flex; align-items: center; gap: 8px; color: var(--bone); }
+.feed-top .on::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #e25c45; box-shadow: 0 0 10px #e25c45; animation: blink 1.4s steps(2) infinite; }
+.wave { display: flex; align-items: center; gap: 3px; height: 54px; margin: 18px 0 6px; }
+.wave i { flex: 1; max-width: 4px; border-radius: 2px; background: linear-gradient(180deg, #ffd29a, var(--c-right)); box-shadow: 0 0 8px rgba(255, 162, 74, .6); transform: scaleY(.08); transition: transform .12s; }
+.lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; min-height: 270px; }
+.lines li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; padding: 12px 0; border-top: 1px solid var(--hair); opacity: .38; transition: opacity .5s; }
+.lines li.now { opacity: 1; }
+.lines .ts { font: 400 11.5px/1.7 var(--mono); color: var(--stone-2); }
+.lines .ts b { display: block; font-weight: 500; color: var(--stone); }
+.lines q { quotes: none; font: 400 clamp(17px, 1.6vw, 21px)/1.35 var(--sans); color: var(--bone); }
+.lines .ang-l { color: var(--c-left); text-shadow: 0 0 12px rgba(95, 208, 255, .5); }
+.lines .ang-r { color: var(--c-right); text-shadow: 0 0 12px rgba(255, 162, 74, .5); }
+.lines .tip { color: var(--bone); font-style: italic; }
+.lines .verdict { color: #ff8a5c; }
+.flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: clamp(60px, 7vw, 96px); border-top: 1px solid var(--hair); }
+.flow > div { padding: 26px 26px 6px 0; }
+.flow > div + div { padding-left: 26px; border-left: 1px solid var(--hair); }
+.flow .t { font: 500 12px/1 var(--mono); letter-spacing: .08em; color: var(--c-right); }
+.flow h3 { font: 500 21px/1.2 var(--serif); margin-top: 12px; }
+.flow p { margin: 8px 0 0; color: var(--stone); font-size: 15px; }
+.tips-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: clamp(60px, 7vw, 96px); }
+.tips-head h3 { font: 500 24px/1.2 var(--serif); }
+.tips-head p { margin: 0; color: var(--stone); font-size: 14.5px; max-width: 52ch; }
+.tips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 22px; border-top: 1px solid var(--hair); }
+.tips > div { padding: 18px 20px 6px 0; }
+.tips > div + div { padding-left: 20px; border-left: 1px solid var(--hair); }
+.tips h4 { margin: 0; font: 500 10.5px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--stone-2); }
+.tips ul { list-style: none; margin: 12px 0 0; padding: 0; }
+.tips li { padding: 9px 0; font-size: 15px; font-style: italic; color: var(--bone); border-bottom: 1px solid var(--hair); }
+.tips li::before { content: "“"; color: var(--c-right); margin-right: 2px; font-style: normal; }
+.tips li::after { content: "”"; color: var(--c-right); margin-left: 1px; font-style: normal; }
+.vfacts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: clamp(50px, 6vw, 80px); border-top: 1px solid var(--hair); }
+.vfacts > div { padding: 22px 20px 0 0; }
+.vfacts > div + div { padding-left: 20px; border-left: 1px solid var(--hair); }
+.vfacts h4 { margin: 0; font: 500 16px/1.25 var(--serif); }
+.vfacts p { margin: 6px 0 0; color: var(--stone); font-size: 14px; }
+@media (max-width: 1000px) { .voice-top { grid-template-columns: 1fr; } .tips, .vfacts { grid-template-columns: 1fr 1fr; } .tips > div:nth-child(3), .vfacts > div:nth-child(3) { padding-left: 0; border-left: 0; } .tips > div:nth-child(n+3), .vfacts > div:nth-child(n+3) { border-top: 1px solid var(--hair); margin-top: 8px; } }
+@media (max-width: 700px) { .flow { grid-template-columns: 1fr; } .flow > div, .flow > div + div { padding: 22px 0 6px; border-left: 0; } .flow > div + div { border-top: 1px solid var(--hair); } }
+@media (max-width: 520px) { .tips, .vfacts { grid-template-columns: 1fr; } .tips > div, .tips > div + div, .vfacts > div, .vfacts > div + div { padding-left: 0; border-left: 0; } .tips > div + div, .vfacts > div + div { border-top: 1px solid var(--hair); margin-top: 8px; } .lines li { grid-template-columns: 52px minmax(0, 1fr); gap: 10px; } }
+
 /* manifesto */
 .manifesto { text-align: center; padding-bottom: clamp(80px, 10vw, 140px); }
 .manifesto .label { justify-content: center; }
@@ -331,6 +380,7 @@ footer .credit a { color: var(--stone-2); }
   <div class="wrap">
     <a class="brand" href="#top" aria-label="MotoLean">Moto<i>Lean</i></a>
     <nav class="nav" aria-label="Sections">
+      <a href="#voice" data-i18n="navVoice">Voice coach</a>
       <a href="#model" data-i18n="navModel">The model</a>
       <a href="#anatomy" data-i18n="navAnatomy">Anatomy</a>
       <a href="#screens" data-i18n="navScreens">The app</a>
@@ -379,7 +429,46 @@ footer .credit a { color: var(--stone-2); }
         <div><b class="fig" data-i18n="s1n">100 Hz</b><span data-i18n="s1">raw motion log behind every ride</span></div>
         <div><b class="fig">12</b><span data-i18n="s2">criteria per corner, in four phases</span></div>
         <div><b class="fig">≈1°</b><span data-i18n="s3">from turn physics on road test rides</span></div>
-        <div><b class="fig">0</b><span data-i18n="s4">taps while you ride</span></div>
+        <div><b class="fig" data-i18n="s4n">4 s</b><span data-i18n="s4">from corner exit to the score and tip in your helmet</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="voice" id="voice">
+    <div class="wrap">
+      <div class="voice-top">
+        <div class="rv">
+          <span class="label" data-i18n="vLabel">Real-time voice coach</span>
+          <h2 style="margin-top:26px" data-i18n-html="vTitle">A coach in your helmet. <em>After every corner.</em></h2>
+          <p class="lead" data-i18n="vLead">No screen, no taps. The moment you exit a corner, MotoLean speaks its peak lean. Four seconds later, once it has seen the throttle come back, it adds the score and the one thing to fix — so you can try it in the very next bend.</p>
+          <span class="live-chip"><i></i><span data-i18n="vChip">Corner by corner, while it is still fresh</span></span>
+        </div>
+        <div class="feed rv" aria-label="Example of voice prompts during a ride">
+          <div class="feed-top"><span class="on" data-i18n="vFeed">In your helmet</span><span class="num" id="vclock">00:12:04</span></div>
+          <div class="wave" id="vwave" aria-hidden="true"></div>
+          <ol class="lines" id="vlines"></ol>
+        </div>
+      </div>
+
+      <div class="flow">
+        <div class="rv"><span class="t" data-i18n="f1t">EXIT · 0 s</span><h3 data-i18n="f1h">The angle, at once</h3><p data-i18n="f1">“41, left.” The peak lean of the corner you just rode, as soon as the bike stands up.</p></div>
+        <div class="rv"><span class="t" data-i18n="f2t">+4 s</span><h3 data-i18n="f2h">The score and one tip</h3><p data-i18n="f2">“72 points. Open the throttle earlier.” The model ranks the four phases and speaks only about the weakest.</p></div>
+        <div class="rv"><span class="t" data-i18n="f3t">NEXT CORNER</span><h3 data-i18n="f3h">Try it straight away</h3><p data-i18n="f3">One change at a time, while the corner is still in your head. The next prompt tells you whether it worked.</p></div>
+      </div>
+
+      <div class="tips-head rv"><h3 data-i18n="tipsH">Twelve tips the coach can give</h3><p data-i18n="tipsP">One for each scoring criterion. You hear the one for your weakest phase; below 70 points it also says “Weak corner”, below 50 “Poor corner”.</p></div>
+      <div class="tips rv">
+        <div><h4 data-i18n="ph1">Braking</h4><ul><li data-i18n="t11">Finish braking before you lean</li><li data-i18n="t12">Release the brakes more gently</li><li data-i18n="t13">Brake once, before the corner</li></ul></div>
+        <div><h4 data-i18n="ph2">Tip-in</h4><ul><li data-i18n="t21">Lean in with one motion</li><li data-i18n="t22">Lean in earlier</li><li data-i18n="t23">Roll off the throttle before turn-in</li></ul></div>
+        <div><h4 data-i18n="ph3">Apex</h4><ul><li data-i18n="t31">Hold one line</li><li data-i18n="t32">Slow down before the apex</li><li data-i18n="t33">Stop slowing before the apex</li></ul></div>
+        <div><h4 data-i18n="ph4">Exit</h4><ul><li data-i18n="t41">Open the throttle earlier</li><li data-i18n="t42">Keep the throttle steady on the exit</li><li data-i18n="t43">Stand the bike up in one motion</li></ul></div>
+      </div>
+
+      <div class="vfacts rv">
+        <div><h4 data-i18n="vf1h">Any Bluetooth headset</h4><p data-i18n="vf1">Cardo, Sena or earbuds. Prompts mix with your music or dip it for a second.</p></div>
+        <div><h4 data-i18n="vf2h">Only corners that matter</h4><p data-i18n="vf2">Set the angle to announce from — 30° by default — so straights and bends stay quiet.</p></div>
+        <div><h4 data-i18n="vf3h">Lean alarm</h4><p data-i18n="vf3">An optional beep the moment you pass the angle you set for yourself.</p></div>
+        <div><h4 data-i18n="vf4h">Screen off, hands on the bars</h4><p data-i18n="vf4">Records and speaks in the background, in the language of the app.</p></div>
       </div>
     </div>
   </section>
@@ -451,17 +540,6 @@ footer .credit a { color: var(--stone-2); }
           <li><span data-i18n="c41">Throttle soon after the apex</span><b>10</b></li>
           <li><span data-i18n="c42">Acceleration without dips</span><b>8</b></li>
           <li><span data-i18n="c43">No lean added on the exit</span><b>7</b></li></ol></div>
-      </div>
-      <div class="spoken">
-        <figure class="quote rv">
-          <small data-i18n="qWhen">+3.0 s after the exit · in your helmet</small>
-          <p data-i18n="tl4">“41, left. 72 points. Open the throttle earlier.”</p>
-        </figure>
-        <div class="points rv">
-          <div class="point"><h3 data-i18n="p1t">One tip, not a lecture</h3><p data-i18n="p1">The model ranks the four phases and speaks only about the weakest, so you know exactly what to try in the next corner.</p></div>
-          <div class="point"><h3 data-i18n="p2t">Any Bluetooth headset</h3><p data-i18n="p2">Cardo, Sena or earbuds. Prompts play over your music or dip it for a second.</p></div>
-          <div class="point"><h3 data-i18n="p3t">Hands stay on the bars</h3><p data-i18n="p3">Records and speaks with the screen off, pauses itself at stops, and shows the ride on the Lock Screen and in the Dynamic Island.</p></div>
-        </div>
       </div>
     </div>
   </section>
@@ -567,13 +645,28 @@ footer .credit a { color: var(--stone-2); }
   document.documentElement.classList.add("js");
   const I18N = {
     ru: {
-      navModel: "Модель", navAnatomy: "Анатомия", navScreens: "Приложение", navProof: "Проверка",
+      navVoice: "Голосовой тренер", navModel: "Модель", navAnatomy: "Анатомия", navScreens: "Приложение", navProof: "Проверка",
       ctaStore: "App Store", ctaTour: "Как устроена модель",
       heroLabel: "Телеметрия поворотов для iPhone",
       h1a: "Каждый поворот\u00a0—", h1b: "в цифрах.",
       heroLead: "MotoLean строит математическую модель каждого поворота: датчики 100 Гц, геометрия руля и траектория с фильтром Калмана. Через пару секунд после выхода он говорит в шлем, что показали цифры.",
       soon: "Бесплатно для iPhone · iOS 17 и новее · скоро в App Store",
-      s1n: "100 Гц", s1: "сырой лог датчиков в каждой поездке", s2: "критериев на поворот в четырёх фазах", s3: "от физики поворота в тестовых поездках по дороге", s4: "нажатий во время езды",
+      s1n: "100 Гц", s1: "сырой лог датчиков в каждой поездке", s2: "критериев на поворот в четырёх фазах", s3: "от физики поворота в тестовых поездках по дороге", s4n: "4 с", s4: "от выхода из поворота до оценки и совета в шлеме",
+      vLabel: "Голосовой тренер в реальном времени", vTitle: "Тренер у вас в шлеме. <em>После каждого поворота.</em>",
+      vLead: "Без экрана и без нажатий. Как только вы вышли из поворота, MotoLean называет пиковый наклон. Через четыре секунды, когда модель увидела, как вернулся газ, — оценку и главное, что исправить. Попробовать можно уже в следующем повороте.",
+      vChip: "Поворот за поворотом, пока он свеж в голове", vFeed: "В шлеме",
+      f1t: "ВЫХОД · 0 С", f1h: "Угол — сразу", f1: "«41, влево». Пиковый наклон поворота, который вы только что проехали, как только мотоцикл поднялся.",
+      f2t: "+4 С", f2h: "Оценка и один совет", f2: "«72 балла. Открывайся раньше». Модель сравнивает четыре фазы и говорит только о самой слабой.",
+      f3t: "СЛЕДУЮЩИЙ ПОВОРОТ", f3h: "Пробуйте сразу", f3: "Одно изменение за раз, пока поворот ещё в голове. Следующая подсказка скажет, получилось ли.",
+      tipsH: "Двенадцать советов тренера", tipsP: "По одному на каждый критерий оценки. Вы слышите совет по самой слабой фазе; ниже 70 баллов тренер добавит «Слабо», ниже 50 — «Плохо».",
+      t11: "Заканчивай тормозить до наклона", t12: "Отпускай тормоз плавнее", t13: "Тормози один раз, до поворота",
+      t21: "Наклоняйся одним движением", t22: "Наклоняйся раньше", t23: "Сбрось газ до входа",
+      t31: "Держи одну траекторию", t32: "Сбрасывай скорость до апекса", t33: "Не тормози в апексе",
+      t41: "Открывайся раньше", t42: "Держи газ ровно на выходе", t43: "Поднимай мотоцикл одним движением",
+      vf1h: "Любая Bluetooth-гарнитура", vf1: "Cardo, Sena или наушники. Подсказки звучат поверх музыки или приглушают её на секунду.",
+      vf2h: "Только важные повороты", vf2: "Задайте угол, с которого озвучивать, — по умолчанию 30°, — и прямые с плавными дугами останутся тихими.",
+      vf3h: "Сигнал наклона", vf3: "По желанию — сигнал в момент, когда вы превысили заданный себе угол.",
+      vf4h: "Экран выключен, руки на руле", vf4: "Пишет и говорит в фоне, на языке приложения.",
       manLabel: "Не игрушка", manTitle: "Прибор показывает число. <em>Модель объясняет почему.</em>",
       manLead: "Обычные приложения читают из телефона один угол — и на этом всё. MotoLean восстанавливает поворот целиком: где вы тормозили, как заложили мотоцикл, где на самом деле был апекс и когда вернулся газ. А перед оценкой сверяет себя с физикой поворота.",
       bandCap: "Наклон, которого требует установившийся поворот",
@@ -592,11 +685,6 @@ footer .credit a { color: var(--stone-2); }
       c21: "Одним движением, без пауз от 0,5 с", c22: "Пик наклона не позже начала выхода", c23: "Нет разгона во время закладки",
       c31: "Нет коррекций траектории", c32: "Минимум скорости не позже апекса", c33: "В апексе скорость уже не падает",
       c41: "Газ вскоре после апекса", c42: "Разгон без провалов", c43: "На выходе наклон не добавляется",
-      qWhen: "+3,0 с после выхода · в шлеме",
-      tl4: "«41, влево. 72 балла. Открывайся раньше.»",
-      p1t: "Один совет, а не лекция", p1: "Модель сравнивает четыре фазы и говорит только о самой слабой: ясно, что попробовать в следующем повороте.",
-      p2t: "Любая Bluetooth-гарнитура", p2: "Cardo, Sena или наушники. Подсказки звучат поверх музыки или приглушают её на секунду.",
-      p3t: "Руки на руле", p3: "Пишет и говорит с выключенным экраном, сам ставит паузу на остановках, поездка видна на экране блокировки и в Dynamic Island.",
       scrLabel: "Приложение", scrTitle: "После поездки — разбор.",
       scrLead: "Настоящие экраны MotoLean 1.0. Каждый поворот сохраняется, оценивается и встаёт рядом со всеми проездами того же поворота.",
       co1: "Оценка: 12 критериев, 100 баллов", co2: "Закладку, апекс и газ расставляет модель", co3: "Скорость, фильтр Калмана, 10 Гц", co4: "Наклон на той же оси",
@@ -651,7 +739,7 @@ footer .credit a { color: var(--stone-2); }
     document.querySelectorAll("[data-i18n-html]").forEach(el => { const v = d[el.dataset.i18nHtml]; if (v != null) el.innerHTML = nb(v); });
     document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
     document.querySelectorAll("img[data-shot]").forEach(img => img.src = `img/${lang === "ru" ? "ru_" : ""}${img.dataset.shot}.jpg`);
-    document.getElementById("cspd").textContent = `62 ${kmh()}`; document.getElementById("cunit").textContent = kmh();
+    document.getElementById("cspd").textContent = `62 ${kmh()}`; if (typeof renderFeed === "function") try { renderFeed(); } catch (e) {} document.getElementById("cunit").textContent = kmh();
     try { localStorage.setItem("ml-lang", lang); } catch (e) {}
   }
   document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
@@ -680,6 +768,46 @@ footer .credit a { color: var(--stone-2); }
   }
   readout(0);
   if (!reduce) { let last = 0; (function tick(now) { if (now - last > 100) { last = now; readout(now); } requestAnimationFrame(tick); })(0); }
+
+
+  /* voice coach feed: prompts arrive one by one, the newest one "speaks" */
+  const FEED = {
+    en: [["T3", "00:12:04", 38, "right", 88, "", ""], ["T4", "00:12:19", 41, "left", 72, "", "Open the throttle earlier"], ["T5", "00:12:33", 36, "left", 64, "Weak corner", "Lean in with one motion"], ["T6", "00:12:51", 44, "right", 95, "", ""], ["T7", "00:13:08", 33, "right", 81, "", "Release the brakes more gently"]],
+    ru: [["T3", "00:12:04", 38, "вправо", 88, "", ""], ["T4", "00:12:19", 41, "влево", 72, "", "Открывайся раньше"], ["T5", "00:12:33", 36, "влево", 64, "Слабо", "Наклоняйся одним движением"], ["T6", "00:12:51", 44, "вправо", 95, "", ""], ["T7", "00:13:08", 33, "вправо", 81, "", "Отпускай тормоз плавнее"]],
+  };
+  const scoreColor = v => { const S = [[50, [255, 77, 77]], [70, [255, 159, 67]], [85, [243, 211, 74]], [100, [79, 216, 140]]]; v = Math.max(50, Math.min(100, v)); for (let k = 1; k < S.length; k++) if (v <= S[k][0]) { const t = (v - S[k - 1][0]) / (S[k][0] - S[k - 1][0]); return "rgb(" + S[k - 1][1].map((a, j) => Math.round(a + (S[k][1][j] - a) * t)).join(",") + ")"; } };
+  const vlines = document.getElementById("vlines"), vwave = document.getElementById("vwave"), vclock = document.getElementById("vclock");
+  for (let k = 0; k < 48; k++) vwave.insertAdjacentHTML("beforeend", "<i></i>");
+  const bars = [...vwave.children];
+  let vi = 0, speakingUntil = 0;
+  function feedLine(f, ru) {
+    const [turn, time, deg, side, score, verdict, tip] = f;
+    const left = side === "left" || side === "влево";
+    const pts = ru ? (score % 10 >= 2 && score % 10 <= 4 && (score % 100 < 12 || score % 100 > 14) ? "балла" : "баллов") : "points";
+    const c = scoreColor(score);
+    let q = `<span class="${left ? "ang-l" : "ang-r"}">${deg}, ${side}.</span> <span style="color:${c};text-shadow:0 0 12px ${c.replace("rgb", "rgba").replace(")", ",.45)")}">${score} ${pts}.</span>`;
+    if (verdict) q += ` <span class="verdict">${verdict}.</span>`;
+    if (tip) q += ` <span class="tip">${tip}.</span>`;
+    return `<li><span class="ts"><b>${turn}</b>${time}</span><q>${q}</q></li>`;
+  }
+  function renderFeed() {
+    const L = FEED[lang === "ru" ? "ru" : "en"];
+    const shown = [];
+    for (let k = 3; k >= 0; k--) shown.push(L[(vi - k + L.length * 10) % L.length]);
+    vlines.innerHTML = shown.map(f => feedLine(f, lang === "ru")).join("");
+    vlines.lastElementChild.classList.add("now");
+    vclock.textContent = shown[3][1];
+  }
+  renderFeed();
+  if (!reduce) {
+    setInterval(() => { vi++; renderFeed(); speakingUntil = performance.now() + 2600; }, 3400);
+    speakingUntil = performance.now() + 2600;
+    (function wave(now) {
+      const on = now < speakingUntil;
+      bars.forEach((b, k) => { const v = on ? .25 + .75 * Math.abs(Math.sin(now / 140 + k * .55) * Math.sin(now / 410 + k * .21)) : .06; b.style.transform = `scaleY(${v.toFixed(2)})`; });
+      requestAnimationFrame(wave);
+    })(performance.now());
+  } else bars.forEach(b => b.style.transform = "scaleY(.5)");
 
   /* on a narrow screen, start the chart scrolled to the apex */
   const cs = document.querySelector(".chart-scroll");
