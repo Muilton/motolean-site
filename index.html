@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="fonts/fonts.css">
 <style>
 /* Direction: an editorial telemetry house. Ink black and a paper-white technical section,
-   one champagne accent used sparingly. One Noto Sans family for every language, figures tabular. */
+   one champagne accent used sparingly. Inter for Latin and Cyrillic, Noto for CJK, figures tabular. */
 :root {
   --ink: #0a0a0a;
   --ink-2: #121211;
@@ -27,9 +27,14 @@
   --paper-ink: #141413;
   --paper-stone: #5e5a53;
   --paper-hair: rgba(20, 20, 19, .14);
-  /* One family for every language the app speaks: Noto Sans (Latin, Cyrillic, Greek) + Noto Sans Math
-     (arrows, ≈, ≥), and the matching Noto Sans JP / KR / SC for Japanese, Korean and Chinese. */
-  --font: "Noto Sans", "Noto Sans Math", "Noto Sans JP", "Noto Sans KR", "Noto Sans SC", "Hiragino Sans", "Apple SD Gothic Neo", "PingFang SC", system-ui, sans-serif;
+  /* A font per script: Inter for Latin and Cyrillic (all ten European languages), Noto Sans Math for arrows
+     and symbols, Noto Sans JP / KR / SC for Japanese, Korean and Chinese (picked per language below). */
+  --font: "Inter", "Noto Sans Math", "Noto Sans JP", "Noto Sans KR", "Noto Sans SC", "Hiragino Sans", "Apple SD Gothic Neo", "PingFang SC", system-ui, sans-serif;
+  /* Data colours, the same as in the app: left, right, speed, score. They glow on dark grounds. */
+  --c-left: #5fd0ff;
+  --c-right: #ffa24a;
+  --c-speed: #6ee08a;
+  --c-good: #4fd88c;
   --serif: var(--font);
   --sans: var(--font);
   --mono: var(--font);
@@ -37,9 +42,9 @@
   color-scheme: dark;
 }
 /* Han characters differ between Japanese, Korean and Chinese: put the right CJK face first per language. */
-:root:lang(ja) { --font: "Noto Sans", "Noto Sans Math", "Noto Sans JP", "Hiragino Sans", system-ui, sans-serif; }
-:root:lang(ko) { --font: "Noto Sans", "Noto Sans Math", "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif; }
-:root:lang(zh) { --font: "Noto Sans", "Noto Sans Math", "Noto Sans SC", "PingFang SC", system-ui, sans-serif; }
+:root:lang(ja) { --font: "Inter", "Noto Sans Math", "Noto Sans JP", "Hiragino Sans", system-ui, sans-serif; }
+:root:lang(ko) { --font: "Inter", "Noto Sans Math", "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif; }
+:root:lang(zh) { --font: "Inter", "Noto Sans Math", "Noto Sans SC", "PingFang SC", system-ui, sans-serif; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--ink); color: var(--bone); font: 400 16.5px/1.62 var(--sans); font-variant-numeric: tabular-nums; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
@@ -100,6 +105,8 @@ section { padding-block: clamp(100px, 13vw, 190px); }
 .track-ui text { font: 400 10.4px var(--mono); fill: #ece7de; letter-spacing: .05em; font-variant-numeric: tabular-nums; }
 .track-ui .k { fill: rgba(236, 231, 222, .72); }
 .track-ui .g { fill: var(--gold-2); }
+.track-ui .vphi { fill: var(--c-right); filter: drop-shadow(0 0 4px rgba(255, 162, 74, .7)); }
+.track-ui .vspd { fill: var(--c-speed); filter: drop-shadow(0 0 4px rgba(110, 224, 138, .6)); }
 .track-ui g.ui { opacity: 0; animation: ui-in 1.4s .6s ease forwards; }
 @keyframes ui-in { to { opacity: 1; } }
 @media (max-width: 999px) { .track-ui { display: none; } .hero { min-height: 0; padding-top: var(--mh); } .hero .bg { bottom: auto; height: calc(var(--mh) + 40px); } .hero .bg img { object-position: 84% 45%; } .hero::before { bottom: auto; height: calc(var(--mh) + 41px); background: linear-gradient(0deg, var(--ink) 0%, rgba(10, 10, 10, 0) 28%, rgba(10, 10, 10, 0) 82%, rgba(10, 10, 10, .6) 100%); } .m-read { display: flex; } }
@@ -108,6 +115,8 @@ section { padding-block: clamp(100px, 13vw, 190px); }
 :root { --mh: min(58svh, 128vw); }
 .m-read { display: none; position: absolute; left: var(--pad); right: var(--pad); top: calc(var(--mh) - 54px); justify-content: space-between; font: 400 12px/1 var(--mono); letter-spacing: .08em; color: rgba(236, 231, 222, .85); font-variant-numeric: tabular-nums; }
 .m-read b { font-weight: 400; color: var(--gold-2); }
+.m-read #mphi { color: var(--c-right); text-shadow: 0 0 10px rgba(255, 162, 74, .6); }
+.m-read #mv { color: var(--c-speed); text-shadow: 0 0 10px rgba(110, 224, 138, .5); }
 @media (max-width: 999px) { .m-read { display: flex; } }
 .hero .lead { max-width: 46ch; }
 .hero h1 { font-size: clamp(46px, 6.8vw, 108px); line-height: .98; margin-top: 26px; }
@@ -155,22 +164,22 @@ section { padding-block: clamp(100px, 13vw, 190px); }
 .chart .ph.alt { fill: rgba(236, 231, 222, .055); }
 .chart .ax { stroke: var(--hair-2); stroke-width: 1; }
 .chart .gl { stroke: var(--hair); stroke-width: 1; }
-.chart .lean { fill: none; stroke: var(--bone); stroke-width: 2; }
-.chart .speed { fill: none; stroke: var(--gold); stroke-width: 1.5; stroke-dasharray: 5 5; }
+.chart .lean { fill: none; stroke: var(--c-right); stroke-width: 2.2; filter: drop-shadow(0 0 5px rgba(255, 162, 74, .65)); }
+.chart .speed { fill: none; stroke: var(--c-speed); stroke-width: 2; filter: drop-shadow(0 0 5px rgba(110, 224, 138, .55)); }
 .chart .apex { stroke: var(--gold-2); stroke-width: 1; stroke-dasharray: 2 4; }
 .chart text { font: 400 12.5px var(--mono); fill: var(--stone); letter-spacing: .04em; }
-.chart text.gs { fill: var(--gold); }
-.chart .sax line { stroke: var(--gold); stroke-width: 1; }
+.chart text.gs { fill: var(--c-speed); }
+.chart .sax line { stroke: var(--c-speed); stroke-width: 1; }
 .chart text.pt { font: 500 11px var(--sans); fill: var(--stone); letter-spacing: .22em; text-transform: uppercase; }
-.chart text.v { fill: var(--bone); font-size: 12px; }
-.chart text.gv { fill: var(--gold-2); font-size: 12px; }
+.chart text.v { fill: var(--c-right); font-size: 12.5px; font-weight: 500; }
+.chart text.gv { fill: var(--c-speed); font-size: 12.5px; font-weight: 500; }
 .js .chart .lean { stroke-dasharray: 1700; stroke-dashoffset: 1700; transition: stroke-dashoffset 2.4s cubic-bezier(.3, .6, .2, 1); }
 .js .chart .speed-wrap { clip-path: inset(0 100% 0 0); transition: clip-path 2.4s cubic-bezier(.3, .6, .2, 1); }
 .js .chart.in .lean { stroke-dashoffset: 0; }
 .js .chart.in .speed-wrap { clip-path: inset(0 0 0 0); }
 .chart-legend { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 18px; font: 400 12px/1.3 var(--mono); color: var(--stone-2); }
-.chart-legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--bone); vertical-align: middle; margin-right: 10px; }
-.chart-legend i.s { border-top: 1.5px dashed var(--gold); }
+.chart-legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--c-right); vertical-align: middle; margin-right: 10px; }
+.chart-legend i.s { border-top: 2px solid var(--c-speed); }
 .criteria { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 46px; border-top: 1px solid var(--hair); }
 .criteria > div { padding: 28px 26px 8px 0; }
 .criteria > div + div { padding-left: 26px; border-left: 1px solid var(--hair); }
@@ -347,8 +356,8 @@ footer .credit a { color: var(--stone-2); }
           <path class="br" d="M520 197v-22h22M853 175h22v22M875 418v22h-22M542 440h-22v-22"/>
           <circle class="cp" cx="678" cy="424" r="5"/><path class="cp" d="M678 412v-6M678 436v6M666 424h-6M690 424h6"/>
           <text class="k" x="875" y="470" text-anchor="end" id="tclock">00:47:12.4</text>
-          <text x="520" y="455"><tspan class="k">φ </tspan><tspan id="tphi">47.2°</tspan></text>
-          <text x="608" y="455"><tspan class="k">v </tspan><tspan id="tv">98 km/h</tspan></text>
+          <text x="520" y="455"><tspan class="k">φ </tspan><tspan id="tphi" class="vphi">47.2°</tspan></text>
+          <text x="608" y="455"><tspan class="k">v </tspan><tspan id="tv" class="vspd">98 km/h</tspan></text>
           <text x="710" y="455"><tspan class="k">a </tspan>+0.02 g</text>
           <text class="g" x="875" y="455" text-anchor="end" id="tph">APEX</text>
         </g>
@@ -493,11 +502,11 @@ footer .credit a { color: var(--stone-2); }
               <div class="bandlbl"><span></span><div><span data-i18n="bandLbl">physics 34–36°</span></div><span></span></div>
               <div class="b"><span data-i18n="b1">Raw, left</span><span class="track"><span class="band2"></span><span class="fill" style="--v:42.4;--c:#a9a297"></span></span><span class="val">42.4°</span></div>
               <div class="b"><span data-i18n="b2">Raw, right</span><span class="track"><span class="band2"></span><span class="fill" style="--v:41.0;--c:#a9a297"></span></span><span class="val">41.0°</span></div>
-              <div class="b"><span data-i18n="b3">Model, left</span><span class="track"><span class="band2"></span><span class="fill" style="--v:33.4;--c:#141413"></span></span><span class="val">33.4°</span></div>
-              <div class="b"><span data-i18n="b4">Model, right</span><span class="track"><span class="band2"></span><span class="fill" style="--v:33.5;--c:#141413"></span></span><span class="val">33.5°</span></div>
+              <div class="b"><span data-i18n="b3">Model, left</span><span class="track"><span class="band2"></span><span class="fill" style="--v:33.4;--c:#1a8fc8"></span></span><span class="val">33.4°</span></div>
+              <div class="b"><span data-i18n="b4">Model, right</span><span class="track"><span class="band2"></span><span class="fill" style="--v:33.5;--c:#dd7a1e"></span></span><span class="val">33.5°</span></div>
               <div class="axis"><span></span><div><span style="left:0">0°</span><span style="left:22.22%">10°</span><span style="left:44.44%">20°</span><span style="left:66.67%">30°</span><span style="left:88.89%">40°</span></div><span></span></div>
             </div>
-            <div class="legend"><span><i style="background:#a9a297;height:2px;vertical-align:3px"></i><span data-i18n="lg1">Before steering correction</span></span><span><i style="background:#141413;height:2px;vertical-align:3px"></i><span data-i18n="lg3">With the steering model</span></span></div>
+            <div class="legend"><span><i style="background:#a9a297;height:2px;vertical-align:3px"></i><span data-i18n="lg1">Before steering correction</span></span><span><i style="background:linear-gradient(90deg,#1a8fc8 50%,#dd7a1e 50%);height:2px;vertical-align:3px"></i><span data-i18n="lg3">With the steering model (left · right)</span></span></div>
             <p data-i18n="v2">With the phone on the bars, turning the handlebars tilts the phone and inflates the lean. The steering model takes it out, and the two sides land within a tenth of a degree of each other.</p>
           </div>
         </div>
@@ -600,7 +609,7 @@ footer .credit a { color: var(--stone-2); }
       v1: "Измеренный наклон, делённый на наклон, которого требуют скорость и угловая скорость, в установившихся поворотах. Без подгоночных коэффициентов: эмпирические поправки убраны, когда модель совпала.",
       v2k: "Джимхана · восьмёрки на скорости 14–15 км/ч", v2t: "Модель руля убирает 8–9° фантомного наклона",
       b1: "Сырые, влево", b2: "Сырые, вправо", b3: "Модель, влево", b4: "Модель, вправо",
-      bandLbl: "физика 34–36°", lg1: "Без поправки на руль", lg3: "С моделью руля", lg2: "Физика поворота, 34–36°",
+      bandLbl: "физика 34–36°", lg1: "Без поправки на руль", lg3: "С моделью руля (влево · вправо)", lg2: "Физика поворота, 34–36°",
       v2: "Телефон на руле наклоняется вместе с поворотом руля и завышает наклон. Модель руля это убирает, и стороны сходятся в пределах десятой доли градуса.",
       method: "<b>Методика.</b> Дорога: установившиеся повороты из четырёх поездок; наклон по физике считается из скорости GPS и угловой скорости гироскопа. Джимхана: одна сессия восьмёрок с телефоном на руле, пиковый наклон в каждую сторону, одна и та же поездка до и после поправки. Точность датчиков ±2–5°; приложение измеряет мотоцикл, а не центр масс райдера.",
       specLabel: "Характеристики", specTitle: "Для каждого мотоцикла в гараже.",
