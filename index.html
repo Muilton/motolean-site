@@ -8,429 +8,530 @@
 <link rel="icon" href="img/icon.jpg">
 <meta charset="utf-8">
 <title>MotoLean Corner Coach</title>
-<meta name="description" content="Not a toy: a physics and data model of every corner you ride. 100 Hz sensor fusion, handlebar geometry and a Kalman-filtered trajectory, scored on 12 criteria and spoken in your helmet.">
+<meta name="description" content="A mathematical model of every corner you ride: 100 Hz sensor fusion, handlebar geometry and a Kalman-filtered trajectory, scored on 12 criteria and spoken in your helmet.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800;1,900&family=Fira+Sans+Extra+Condensed:ital,wght@0,700;0,800;1,800;1,900&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="preconnect" href="https://images.unsplash.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter+Tight:wght@200;300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a Sunday race broadcast. Hero with a live lean gauge, a timing tower for features,
-   kerb stripes as section breaks, a parc fermé of bike classes. One look: night-race dark. */
+/* Direction: an editorial telemetry house. Ink black and a paper-white technical section,
+   one champagne accent used sparingly. Serif for words, Inter Tight for figures, mono for readouts. */
 :root {
-  --asphalt: #0a0a0b;
-  --asphalt-2: #131315;
-  --asphalt-3: #1c1c1f;
-  --line: #2a2a2e;
-  --ink: #f3f0eb;
-  --ink-dim: #a29d96;
-  --spark: #ff6b1a;
-  --spark-hot: #ff3d14;
-  --gold: #ffc35a;
-  --left: #3fd2ff;
-  --green: #30d158;
-  --kerb: #e1251b;
-  --display: "Barlow Condensed", "Fira Sans Extra Condensed", "Arial Narrow", sans-serif;
-  --body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --ink: #0a0a0a;
+  --ink-2: #121211;
+  --hair: rgba(236, 231, 222, .13);
+  --hair-2: rgba(236, 231, 222, .24);
+  --bone: #ece7de;
+  --stone: #b3ada3;
+  --stone-2: #8a857c;
+  --gold: #c8b48f;
+  --gold-2: #ddcaa6;
+  --paper: #efebe3;
+  --paper-ink: #141413;
+  --paper-stone: #5e5a53;
+  --paper-hair: rgba(20, 20, 19, .14);
+  --serif: "Cormorant Garamond", "Times New Roman", serif;
+  --sans: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --pad: max(20px, env(safe-area-inset-left, 0px));
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--asphalt); color: var(--ink); font: 400 17px/1.55 var(--body); overflow-x: hidden; }
+body { margin: 0; background: var(--ink); color: var(--bone); font: 400 17px/1.6 var(--sans); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 img { max-width: 100%; display: block; }
 a { color: inherit; }
-:focus-visible { outline: 2px solid var(--spark); outline-offset: 3px; }
-.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+:focus-visible { outline: 1px solid var(--gold); outline-offset: 4px; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-inline: var(--pad) max(20px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 900px) { .wrap { padding-inline: 48px; } }
 
-/* ---------- type ---------- */
-.eyebrow { font: 800 italic 15px/1 var(--display); letter-spacing: .16em; text-transform: uppercase; color: var(--spark); display: inline-flex; align-items: center; gap: 12px; }
-.eyebrow::before { content: ""; width: 34px; height: 5px; background: linear-gradient(90deg, var(--spark-hot), var(--spark)); transform: skewX(-28deg); }
-h1, h2, h3 { font-family: var(--display); text-transform: uppercase; margin: 0; text-wrap: balance; }
-h2 { font-weight: 800; font-size: clamp(42px, 6.4vw, 88px); line-height: .9; letter-spacing: -.005em; }
-h2 em, h1 em { font-style: italic; font-weight: 900; color: transparent; background: linear-gradient(100deg, var(--gold), var(--spark) 45%, var(--spark-hot)); -webkit-background-clip: text; background-clip: text; padding-right: .08em; }
-.lead { color: var(--ink-dim); font-size: clamp(17px, 1.6vw, 20px); max-width: 60ch; margin: 22px 0 0; }
-.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+/* type */
+.label { font: 500 11.5px/1.2 var(--sans); letter-spacing: .26em; text-transform: uppercase; color: var(--stone); display: flex; align-items: center; gap: 14px; }
+.label::before { content: ""; width: 28px; height: 1px; background: var(--gold); }
+h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
+h1, h2 { font-family: var(--serif); letter-spacing: -.015em; font-variant-numeric: lining-nums; }
+h2 { font-size: clamp(40px, 5.4vw, 80px); line-height: 1; }
+h2 em { font-style: normal; color: rgba(236, 231, 222, .55); }
+h1 em, .finale h2 em { font-style: italic; color: var(--gold-2); }
+.lead { color: var(--stone); font-size: clamp(16px, 1.3vw, 18.5px); max-width: 58ch; margin: 26px 0 0; }
+.fig { font-family: var(--sans); font-weight: 200; letter-spacing: -.035em; font-variant-numeric: lining-nums tabular-nums; }
+.math { font: italic 400 22px/1.3 var(--serif); font-variant-numeric: lining-nums; color: var(--gold-2); letter-spacing: .01em; }
+.math b { font-style: normal; font-weight: 400; }
+.math small { font: 400 12px/1 var(--mono); font-style: normal; color: var(--stone-2); letter-spacing: .04em; }
+section { padding-block: clamp(100px, 13vw, 190px); }
 
-/* ---------- top bar ---------- */
-.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--asphalt) 82%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--asphalt); }
-.bar .wrap { display: flex; align-items: center; gap: 18px; height: 64px; }
-.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 900 italic 26px/1 var(--display); text-transform: uppercase; letter-spacing: .01em; }
-.brand img { width: 34px; height: 34px; border-radius: 9px; }
-.brand span { color: var(--spark); }
-.nav { display: flex; gap: 22px; margin-left: auto; font: 700 15px/1 var(--display); text-transform: uppercase; letter-spacing: .1em; }
-.nav a { text-decoration: none; color: var(--ink-dim); }
-.nav a:hover { color: var(--ink); }
-.lang { display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
-.lang button { background: none; border: 0; color: var(--ink-dim); font: 800 13px/1 var(--display); letter-spacing: .1em; padding: 9px 12px; cursor: pointer; }
-.lang button[aria-pressed="true"] { background: var(--ink); color: var(--asphalt); }
-.cta { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 999px; text-decoration: none; font: 800 17px/1 var(--display); text-transform: uppercase; letter-spacing: .08em; background: linear-gradient(100deg, var(--spark-hot), var(--spark)); color: #160700; box-shadow: 0 10px 40px rgba(255, 90, 20, .35); }
-.cta svg { width: 20px; height: 20px; }
-.cta.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); box-shadow: none; }
-@media (max-width: 860px) { .nav { display: none; } .bar .cta { display: none; } .lang { margin-left: auto; } }
+/* nav */
+.bar { position: fixed; inset: 0 0 auto; z-index: 20; transition: background .4s, border-color .4s; border-bottom: 1px solid transparent; padding-top: env(safe-area-inset-top, 0px); }
+.bar.solid { background: rgba(10, 10, 10, .84); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-color: var(--hair); }
+.bar .wrap { display: flex; align-items: center; gap: 28px; height: 72px; }
+.brand { font: 500 27px/1 var(--serif); text-decoration: none; letter-spacing: .01em; }
+.brand i { color: var(--gold-2); }
+.nav { display: flex; gap: 30px; margin-left: auto; font: 400 12.5px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; }
+.nav a { text-decoration: none; color: var(--stone); transition: color .2s; }
+.nav a:hover { color: var(--bone); }
+.lang { display: flex; gap: 2px; font: 500 12px/1 var(--sans); letter-spacing: .14em; }
+.lang button { background: none; border: 0; color: var(--stone-2); font: inherit; letter-spacing: inherit; padding: 8px 6px; cursor: pointer; }
+.lang button[aria-pressed="true"] { color: var(--bone); }
+.btn { display: inline-flex; align-items: center; gap: 12px; padding: 17px 28px; border-radius: 999px; text-decoration: none; font: 500 12.5px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; transition: background .25s, color .25s, border-color .25s; white-space: nowrap; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+.btn.solid { background: var(--bone); color: var(--ink); }
+.btn.solid:hover { background: #fff; }
+.btn.line { border: 1px solid var(--hair-2); color: var(--bone); }
+.btn.line:hover { border-color: var(--bone); }
+.btn small { font: 400 10.5px/1 var(--sans); letter-spacing: .14em; opacity: .6; }
+.bar .btn { padding: 11px 16px; font-size: 11.5px; gap: 8px; }
+@media (max-width: 900px) { .nav { display: none; } .lang { margin-left: auto; } .bar .wrap { gap: 14px; } }
 
-/* ---------- hero ---------- */
-.hero { position: relative; overflow: hidden; padding-block: 64px 0; }
-.hero::before { content: ""; position: absolute; inset: -20% -10% auto 35%; height: 120%; background: radial-gradient(closest-side, rgba(255, 98, 20, .45), transparent 70%); filter: blur(30px); pointer-events: none; }
-.hero .top { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 40px; align-items: center; }
-.hero h1 { font-weight: 800; font-size: clamp(58px, 9.4vw, 148px); line-height: .84; letter-spacing: -.01em; margin-top: 22px; }
-.hero h1 .l { display: block; }
-.hero .lead { margin-top: 26px; }
-.hero .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
-.soon { font: 600 13px/1.4 var(--body); color: var(--ink-dim); margin-top: 14px; }
-.hud { font: 500 13px/1 var(--mono); letter-spacing: .06em; color: var(--ink-dim); display: flex; flex-wrap: wrap; gap: 8px 18px; text-transform: uppercase; }
-.hud b { color: var(--ink); font-weight: 700; }
-.hud .live { color: var(--kerb); display: inline-flex; align-items: center; gap: 8px; }
-.hud .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--kerb); box-shadow: 0 0 12px var(--kerb); animation: blink 1.2s steps(2) infinite; }
-@keyframes blink { 50% { opacity: .2; } }
+/* hero */
+.hero { position: relative; min-height: max(760px, 100svh); display: flex; flex-direction: column; justify-content: flex-end; padding: 150px 0 0; overflow: hidden; isolation: isolate; }
+.hero .bg { position: absolute; inset: 0; z-index: -2; }
+.hero .bg img, .hero .bg svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero .bg img { object-fit: cover; object-position: 50% 50%; filter: saturate(.32) contrast(1.08) brightness(.84); }
+.hero::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(90deg, rgba(10, 10, 10, .88) 0%, rgba(10, 10, 10, .78) 30%, rgba(10, 10, 10, .2) 52%, rgba(10, 10, 10, 0) 62%), linear-gradient(0deg, var(--ink) 0%, rgba(10, 10, 10, .4) 22%, rgba(10, 10, 10, 0) 45%), linear-gradient(180deg, rgba(10, 10, 10, .65) 0%, rgba(10, 10, 10, 0) 20%); }
+.hero .bg img.soft { filter: saturate(.25) contrast(1.05) brightness(.84) blur(2.2px); -webkit-mask-image: radial-gradient(9% 11% at 70% 55%, #000 55%, transparent 100%); mask-image: radial-gradient(9% 11% at 70% 55%, #000 55%, transparent 100%); }
+@media (max-width: 999px) { .hero .bg img.soft { object-position: 72% 40%; -webkit-mask-image: none; mask-image: none; display: none; } }
+.track-ui .br { fill: none; stroke: rgba(236, 231, 222, .85); stroke-width: 1.1; }
+.track-ui .hl { stroke: rgba(236, 231, 222, .35); stroke-width: .7; stroke-dasharray: 3 4; }
+.track-ui .cp { fill: none; stroke: var(--gold-2); stroke-width: 1; }
+.track-ui text { font: 400 10.4px var(--mono); fill: #ece7de; letter-spacing: .05em; font-variant-numeric: tabular-nums; }
+.track-ui .k { fill: rgba(236, 231, 222, .72); }
+.track-ui .g { fill: var(--gold-2); }
+.track-ui g.ui { opacity: 0; animation: ui-in 1.4s .6s ease forwards; }
+@keyframes ui-in { to { opacity: 1; } }
+@media (max-width: 999px) { .track-ui { display: none; } .hero { min-height: 0; padding-top: var(--mh); } .hero .bg { bottom: auto; height: calc(var(--mh) + 40px); } .hero .bg img { object-position: 84% 45%; } .hero::before { bottom: auto; height: calc(var(--mh) + 41px); background: linear-gradient(0deg, var(--ink) 0%, rgba(10, 10, 10, 0) 28%, rgba(10, 10, 10, 0) 82%, rgba(10, 10, 10, .6) 100%); } .m-read { display: flex; } }
+@media (max-width: 760px) { .hero .actions .btn.line { border: 0; padding-inline: 4px; } .hero .actions .btn.line::after { content: "→"; letter-spacing: 0; } }
+.hero-copy { max-width: 760px; }
+:root { --mh: min(58svh, 128vw); }
+.m-read { display: none; position: absolute; left: var(--pad); right: var(--pad); top: calc(var(--mh) - 54px); justify-content: space-between; font: 400 12px/1 var(--mono); letter-spacing: .08em; color: rgba(236, 231, 222, .85); font-variant-numeric: tabular-nums; }
+.m-read b { font-weight: 400; color: var(--gold-2); }
+@media (max-width: 999px) { .m-read { display: flex; } }
+.hero .lead { max-width: 46ch; }
+.hero h1 { font-size: clamp(58px, 8.8vw, 140px); line-height: .92; margin-top: 26px; }
+.hero h1 span { display: block; }
+.hero .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 40px; }
+.soon { font: 400 13.5px/1.5 var(--sans); color: var(--stone-2); margin-top: 18px; }
 
-.stage { position: relative; min-height: 600px; }
-.rider { position: absolute; inset: 0 0 auto auto; width: min(100%, 560px); aspect-ratio: 1; border-radius: 40px; overflow: hidden; transform: rotate(-4deg); box-shadow: 0 40px 120px rgba(0, 0, 0, .8), 0 0 0 1px rgba(255, 255, 255, .06); }
-.rider img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.12); }
-.rider::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(10, 10, 11, .85)); }
-.race-no { position: absolute; left: -10px; bottom: 30px; font: 900 italic clamp(120px, 15vw, 220px)/.8 var(--display); color: transparent; -webkit-text-stroke: 2px rgba(255, 255, 255, .35); z-index: 2; pointer-events: none; }
-.gauge-card { position: absolute; left: 0; bottom: 0; width: min(92%, 400px); z-index: 3; background: rgba(12, 12, 13, .9); border: 1px solid var(--line); border-radius: 26px; padding: 18px 20px 20px; box-shadow: 0 30px 80px rgba(0, 0, 0, .7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-.gauge-top { display: flex; justify-content: space-between; font: 700 12px/1 var(--mono); letter-spacing: .08em; color: var(--ink-dim); text-transform: uppercase; }
-.gauge svg { width: 100%; height: auto; display: block; }
-.readout { display: flex; align-items: baseline; justify-content: center; gap: 10px; margin-top: -6px; }
-.readout .deg { font: 900 66px/1 var(--display); font-variant-numeric: tabular-nums; min-width: 2.2ch; text-align: right; }
-.readout .side { font: 800 italic 22px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; min-width: 4ch; }
-.bubble { position: absolute; right: 0; top: 46%; z-index: 4; max-width: 330px; display: flex; gap: 14px; align-items: center; padding: 16px 20px 16px 16px; border-radius: 22px; background: linear-gradient(135deg, rgba(48, 26, 10, .95), rgba(20, 14, 11, .95)); border: 1.5px solid rgba(255, 107, 26, .6); box-shadow: 0 20px 60px rgba(0, 0, 0, .7), 0 0 50px rgba(255, 98, 20, .25); transition: opacity .35s, transform .35s; }
-.bubble.off { opacity: 0; transform: translateY(10px) scale(.98); }
-.bubble .ear { flex: none; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #ffb15c, var(--spark-hot)); }
-.bubble p { margin: 0; font: 700 17px/1.3 var(--body); }
-.bubble small { display: block; font: 500 12px/1.3 var(--mono); color: var(--ink-dim); margin-top: 4px; text-transform: uppercase; letter-spacing: .06em; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: clamp(64px, 8vw, 110px); border-top: 1px solid var(--hair); }
+.stats div { padding: 28px 24px 34px 0; }
+.stats div + div { padding-left: 24px; border-left: 1px solid var(--hair); }
+.stats b { display: block; font-size: clamp(42px, 4.6vw, 68px); line-height: 1; white-space: nowrap; }
+.stats span { display: block; margin-top: 12px; font-size: 14px; color: var(--stone); max-width: 24ch; }
+@media (max-width: 760px) { .stats { grid-template-columns: 1fr 1fr; } .stats div:nth-child(3) { padding-left: 0; border-left: 0; } .stats div:nth-child(n+3) { border-top: 1px solid var(--hair); } }
 
-/* ---------- kerb ---------- */
-.kerb { height: 22px; background: repeating-linear-gradient(-60deg, var(--kerb) 0 26px, #f2f2f2 26px 52px); transform: skewY(-1.2deg); margin-block: 60px; box-shadow: 0 0 40px rgba(225, 37, 27, .3); }
-.kerb.thin { height: 10px; margin-block: 0; transform: none; }
+/* manifesto */
+.manifesto { text-align: center; padding-bottom: clamp(80px, 10vw, 140px); }
+.manifesto .label { justify-content: center; }
+.manifesto .label::after { content: ""; width: 28px; height: 1px; background: var(--gold); }
+.manifesto h2 { max-width: 16ch; margin: 30px auto 0; font-size: clamp(42px, 6vw, 92px); }
+.manifesto .lead { margin-inline: auto; }
 
-/* ---------- stats strip ---------- */
-.strip { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.strip div { padding: 26px 22px; border-left: 1px solid var(--line); }
-.strip div:first-child { border-left: 0; }
-.strip b { display: block; white-space: nowrap; font: 900 italic clamp(40px, 5vw, 64px)/.9 var(--display); color: var(--ink); }
-.strip span { display: block; margin-top: 8px; font: 600 14px/1.3 var(--body); color: var(--ink-dim); }
-@media (max-width: 760px) { .strip { grid-template-columns: 1fr 1fr; } .strip div:nth-child(3) { border-left: 0; } .strip div:nth-child(n+3) { border-top: 1px solid var(--line); } }
+/* full-bleed photo band */
+.band { position: relative; height: min(78vh, 760px); min-height: 420px; overflow: hidden; margin: 0; }
+.band img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 38%; filter: saturate(.7) brightness(.82); }
+.band::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, var(--ink) 0%, rgba(10, 10, 10, 0) 18%, rgba(10, 10, 10, 0) 70%, var(--ink) 100%); }
+.band figcaption { position: absolute; z-index: 1; left: 0; right: 0; bottom: clamp(30px, 6vw, 70px); }
+.band figcaption .math { font-size: clamp(22px, 2.4vw, 32px); color: var(--bone); }
+.band figcaption small { display: block; margin-top: 10px; font: 500 11px/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--stone); }
 
-section { padding-block: 90px; }
-.hero .top > *, .pipe > *, .proof > *, .voice-grid > *, .tower-grid > *, .classes > *, .free > *, .strip > *, .tl > *, .point > * { min-width: 0; }
+/* model stages */
+.stages { list-style: none; margin: 60px 0 0; padding: 0; border-top: 1px solid var(--hair); }
+.stages li { display: grid; grid-template-columns: 70px minmax(0, 260px) minmax(0, 1fr) minmax(0, 300px); gap: 12px 36px; padding: 34px 0 36px; border-bottom: 1px solid var(--hair); align-items: baseline; }
+.stages .n { font: 400 12.5px/1 var(--mono); color: var(--gold); letter-spacing: .1em; }
+.stages h3 { font: 500 30px/1.1 var(--serif); }
+.stages p { margin: 0; color: var(--stone); font-size: 16px; }
+.stages .math { font-size: 22px; }
+@media (max-width: 1100px) { .stages li { grid-template-columns: 54px minmax(0, 1fr); } .stages li > :not(.n) { grid-column: 2; } .stages .n { grid-row: span 3; } }
 
-/* ---------- model ---------- */
-.model { background: linear-gradient(180deg, var(--asphalt), var(--asphalt-2) 40%, var(--asphalt)); }
-.pipe { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; margin-top: 46px; border: 1px solid var(--line); border-radius: 22px; overflow: hidden; }
-.stage-card { position: relative; padding: 24px 22px 22px; border-left: 1px solid var(--line); background: var(--asphalt-2); display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.stage-card:first-child { border-left: 0; }
-.stage-card::after { content: "→"; position: absolute; right: -9px; top: 26px; z-index: 2; font: 700 16px/1 var(--mono); color: var(--spark); background: var(--asphalt-2); padding: 2px 0; }
-.stage-card:last-child::after { content: none; }
-.stage-card .n { font: 900 italic 46px/.8 var(--display); color: transparent; -webkit-text-stroke: 1.5px var(--spark); }
-.stage-card h3 { font-size: 25px; font-weight: 800; letter-spacing: .02em; line-height: 1; }
-.stage-card p { margin: 0; color: var(--ink-dim); font-size: 15px; line-height: 1.5; }
-.stage-card code { margin-top: auto; display: block; font: 500 12.5px/1.5 var(--mono); color: var(--gold); background: var(--asphalt); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; overflow-wrap: anywhere; }
-@media (max-width: 1100px) { .pipe { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stage-card { border-left: 0; border-top: 1px solid var(--line); } .stage-card:nth-child(-n+2) { border-top: 0; } .stage-card:nth-child(even) { border-left: 1px solid var(--line); } .stage-card:last-child { grid-column: 1 / -1; } .stage-card::after { content: none; } }
-@media (max-width: 620px) { .pipe { grid-template-columns: 1fr; } .stage-card:nth-child(even) { border-left: 0; } .stage-card:nth-child(2) { border-top: 1px solid var(--line); } }
-.proof { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 18px; margin-top: 18px; }
-.proof > div { border: 1px solid var(--line); border-radius: 22px; background: var(--asphalt-2); padding: 26px 24px; min-width: 0; }
-.proof .tag { font: 800 italic 14px/1 var(--display); letter-spacing: .16em; text-transform: uppercase; color: var(--green); }
-.proof h3 { font-size: 30px; font-weight: 800; margin-top: 10px; line-height: 1; }
-.proof p { color: var(--ink-dim); font-size: 15px; margin: 10px 0 0; }
-.proof .big { font: 900 italic clamp(54px, 7vw, 92px)/.9 var(--display); margin-top: 18px; white-space: nowrap; }
-.proof .formula { font: 500 13px/1.4 var(--mono); color: var(--gold); margin-top: 12px; }
-.bars { display: grid; gap: 10px; margin-top: 18px; }
-.bars .b { display: grid; grid-template-columns: 128px minmax(0, 1fr) 54px; gap: 12px; align-items: center; font: 600 13px/1.2 var(--body); color: var(--ink-dim); }
-.bars .track { position: relative; height: 16px; border-radius: 4px; background: var(--asphalt-3); }
-.bars .band { position: absolute; top: -4px; bottom: -4px; left: calc(34 / 45 * 100%); width: calc(2 / 45 * 100%); background: repeating-linear-gradient(-45deg, rgba(48, 209, 88, .55) 0 4px, rgba(48, 209, 88, .15) 4px 8px); border-radius: 3px; z-index: 1; }
-.bars .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; width: calc(var(--v) / 45 * 100%); background: var(--c); }
-.bars .val { font: 700 14px/1 var(--mono); color: var(--ink); text-align: right; }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 14px; font: 500 12px/1.3 var(--mono); color: var(--ink-dim); text-transform: uppercase; letter-spacing: .04em; }
-.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 6px; }
-@media (max-width: 900px) { .proof { grid-template-columns: 1fr; } }
-@media (max-width: 460px) { .bars .b { grid-template-columns: 96px minmax(0, 1fr) 46px; gap: 8px; } }
+/* anatomy */
+.anatomy { background: linear-gradient(180deg, #121212 0%, #121212 82%, #0a0a0a 100%); border-top: 1px solid var(--hair); }
+.chart-wrap { margin-top: 64px; }
+@media (max-width: 700px) { .chart-wrap { position: relative; } .chart-wrap::after { content: ""; position: absolute; right: calc(-1 * var(--pad)); top: 0; height: calc(100% - 40px); width: 28px; background: linear-gradient(90deg, rgba(18, 18, 18, 0), #121212); pointer-events: none; } .chart-scroll { overflow-x: auto; margin-inline: calc(-1 * var(--pad)); padding-inline: var(--pad); scrollbar-width: none; } .chart-scroll::-webkit-scrollbar { display: none; } .chart { min-width: 680px; } }
+.chart { width: 100%; height: auto; display: block; overflow: visible; }
+.chart .ph { fill: rgba(236, 231, 222, .028); }
+.chart .ph.alt { fill: rgba(236, 231, 222, .055); }
+.chart .ax { stroke: var(--hair-2); stroke-width: 1; }
+.chart .gl { stroke: var(--hair); stroke-width: 1; }
+.chart .lean { fill: none; stroke: var(--bone); stroke-width: 2; }
+.chart .speed { fill: none; stroke: var(--gold); stroke-width: 1.5; stroke-dasharray: 5 5; }
+.chart .apex { stroke: var(--gold-2); stroke-width: 1; stroke-dasharray: 2 4; }
+.chart text { font: 400 12.5px var(--mono); fill: var(--stone); letter-spacing: .04em; }
+.chart text.gs { fill: var(--gold); }
+.chart .sax line { stroke: var(--gold); stroke-width: 1; }
+.chart text.pt { font: 500 11px var(--sans); fill: var(--stone); letter-spacing: .22em; text-transform: uppercase; }
+.chart text.v { fill: var(--bone); font-size: 12px; }
+.chart text.gv { fill: var(--gold-2); font-size: 12px; }
+.js .chart .lean { stroke-dasharray: 1700; stroke-dashoffset: 1700; transition: stroke-dashoffset 2.4s cubic-bezier(.3, .6, .2, 1); }
+.js .chart .speed-wrap { clip-path: inset(0 100% 0 0); transition: clip-path 2.4s cubic-bezier(.3, .6, .2, 1); }
+.js .chart.in .lean { stroke-dashoffset: 0; }
+.js .chart.in .speed-wrap { clip-path: inset(0 0 0 0); }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 18px; font: 400 12px/1.3 var(--mono); color: var(--stone-2); }
+.chart-legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--bone); vertical-align: middle; margin-right: 10px; }
+.chart-legend i.s { border-top: 1.5px dashed var(--gold); }
+.criteria { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 46px; border-top: 1px solid var(--hair); }
+.criteria > div { padding: 28px 26px 8px 0; }
+.criteria > div + div { padding-left: 26px; border-left: 1px solid var(--hair); }
+.criteria h3 { font: 500 26px/1.1 var(--serif); display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.criteria h3 .pts { font: 400 12px/1 var(--mono); color: var(--stone-2); letter-spacing: .06em; }
+.criteria ol { list-style: none; margin: 18px 0 0; padding: 0; }
+.criteria li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 12px 0; border-top: 1px solid var(--hair); font-size: 14.5px; color: var(--stone); line-height: 1.45; }
+.criteria li b { font: 400 12.5px/1.6 var(--mono); color: var(--bone); }
+@media (max-width: 1000px) { .criteria { grid-template-columns: 1fr 1fr; } .criteria > div:nth-child(3) { padding-left: 0; border-left: 0; } }
+@media (max-width: 600px) { .criteria { grid-template-columns: 1fr; } .criteria > div, .criteria > div + div { padding: 28px 0 8px; border-left: 0; } }
+.spoken { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(40px, 6vw, 96px); margin-top: clamp(80px, 9vw, 130px); align-items: start; }
+.quote { margin: 0; }
+.quote small { display: block; font: 400 12.5px/1 var(--mono); color: var(--gold); letter-spacing: .06em; }
+.quote p { margin: 20px 0 0; font: italic 400 clamp(34px, 3.6vw, 52px)/1.12 var(--serif); color: var(--bone); font-variant-numeric: lining-nums; }
+.points { border-top: 1px solid var(--hair); }
+.point { padding: 24px 0; border-bottom: 1px solid var(--hair); }
+.point h3 { font: 500 24px/1.15 var(--serif); }
+.point p { margin: 6px 0 0; color: var(--stone); font-size: 15.5px; }
+@media (max-width: 900px) { .spoken { grid-template-columns: 1fr; } }
 
-/* ---------- voice ---------- */
-.voice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; margin-top: 10px; }
-.timeline { position: relative; display: grid; gap: 14px; }
-.tl { display: grid; grid-template-columns: 88px 1fr; gap: 16px; align-items: center; padding: 16px 18px; border-radius: 18px; background: var(--asphalt-2); border: 1px solid var(--line); }
-.tl .t { font: 700 15px/1 var(--mono); color: var(--spark); }
-.tl p { margin: 0; font-weight: 600; }
-.tl p small { display: block; color: var(--ink-dim); font-weight: 500; font-size: 14px; margin-top: 3px; }
-.tl.say { border-color: rgba(255, 107, 26, .55); background: linear-gradient(135deg, rgba(48, 26, 10, .9), var(--asphalt-2)); }
-.tl.say p { font-size: 19px; }
-.wave { display: flex; align-items: center; gap: 4px; height: 34px; margin-top: 8px; }
-.wave i { width: 5px; border-radius: 3px; background: var(--spark); animation: wave 1.1s ease-in-out infinite; }
-@keyframes wave { 0%, 100% { transform: scaleY(.35); } 50% { transform: scaleY(1); } }
-.points { display: grid; gap: 18px; }
-.point { display: grid; grid-template-columns: 44px 1fr; gap: 14px; }
-.point svg { width: 44px; height: 44px; padding: 10px; border-radius: 12px; background: var(--asphalt-3); color: var(--spark); }
-.point h3 { font-size: 24px; font-weight: 800; letter-spacing: .02em; }
-.point p { margin: 4px 0 0; color: var(--ink-dim); }
+/* screens */
+.screens-sec { position: relative; overflow: hidden; background: var(--ink); padding-bottom: clamp(64px, 7vw, 100px); }
+.screens-sec::before { content: ""; position: absolute; left: 50%; top: 62%; width: min(760px, 110vw); aspect-ratio: 1; transform: translate(-50%, -50%); background: radial-gradient(closest-side, rgba(200, 180, 143, .13), rgba(200, 180, 143, 0)); pointer-events: none; }
+.screens-head { text-align: center; }
+.screens-head .label { justify-content: center; }
+.screens-head .label::after { content: ""; width: 28px; height: 1px; background: var(--gold); }
+.screens-head h2 { margin-top: 26px; }
+.screens-head .lead { margin-inline: auto; }
+.screens { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 340px)); justify-content: center; gap: clamp(24px, 4vw, 64px); margin-top: 110px; }
+.screen { margin: 0; }
+.screen .frame { padding: 8px; border-radius: 46px; background: linear-gradient(160deg, #34332f, #0e0e0d 50%, #2a2925); box-shadow: 0 0 0 1px rgba(255, 255, 255, .07), 0 50px 100px rgba(0, 0, 0, .6); }
+.screen img { width: 100%; height: auto; aspect-ratio: 1320 / 2868; object-fit: cover; border-radius: 38px; background: #000; }
+.screen.mid { transform: translateY(-44px); position: relative; z-index: 1; }
+.screen .frame { position: relative; }
+.co { display: none; }
+@media (min-width: 1180px) {
+  .screens { grid-template-columns: minmax(0, 250px) minmax(0, 330px) minmax(0, 250px); gap: 170px; }
+  .screen:not(.mid) { position: relative; z-index: 0; }
+  .screen.mid { z-index: 2; }
+  .screen:not(.mid) .frame { transform: none; opacity: 1; filter: brightness(.62) saturate(.8); }
+  .co { display: block; position: absolute; height: 1px; background: rgba(236, 231, 222, .4); pointer-events: none; }
+  .co::after { content: ""; position: absolute; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--bone); box-shadow: 0 0 0 3px rgba(7, 7, 7, .8); }
+  .co span { position: absolute; bottom: 7px; width: 128px; font: 400 12.5px/1.35 var(--sans); color: var(--bone); }
+  .co.l { right: calc(100% - var(--x)); width: calc(var(--x) + 140px); }
+  .co.l::after { right: -3px; }
+  .co.l span { left: 0; }
+  .co.r { left: var(--x); width: calc(100% - var(--x) + 140px); }
+  .co.r::after { left: -3px; }
+  .co.r span { right: 0; text-align: right; }
+}
+.screen:not(.mid) .frame { transform: scale(.88); opacity: .82; }
+.screen img { filter: saturate(.85); }
+.screen figcaption { margin-top: 28px; text-align: center; }
+.screen figcaption b { display: block; font: 500 24px/1.15 var(--serif); }
+.screen figcaption span { display: block; margin-top: 6px; color: var(--stone); font-size: 14.5px; }
+.swipe { display: none; }
+@media (max-width: 900px) {
+  .screens { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 18px; padding: 10px var(--pad); margin: 64px calc(-1 * var(--pad)) 0; justify-content: flex-start; scrollbar-width: none; }
+  .screens::-webkit-scrollbar { display: none; }
+  .screen { flex: 0 0 min(70vw, 290px); scroll-snap-align: center; }
+  .screen.mid { transform: none; }
+  .screen:not(.mid) .frame { transform: none; opacity: 1; }
+  .swipe { display: block; text-align: center; margin-top: 18px; font: 400 12px/1 var(--mono); color: var(--stone-2); letter-spacing: .1em; }
+}
 
-/* ---------- timing tower ---------- */
-.tower-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 50px; align-items: start; margin-top: 40px; }
-.tower { border-radius: 18px; overflow: hidden; border: 1px solid var(--line); background: var(--asphalt-2); }
-.tower-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--ink); color: var(--asphalt); font: 900 italic 18px/1 var(--display); text-transform: uppercase; letter-spacing: .08em; }
-.tower-head .mono { font-size: 12px; font-style: normal; font-weight: 700; letter-spacing: .04em; }
-.row { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 54px 6px minmax(0, 1fr) auto; align-items: center; gap: 14px; width: 100%; padding: 16px 18px; border-top: 1px solid var(--line); transition: background .2s; }
-.row:hover { background: var(--asphalt-3); }
-.row:focus-visible { outline: 2px solid var(--spark); outline-offset: -2px; }
-.row .pos { font: 900 italic 28px/1 var(--display); color: var(--ink-dim); }
-.row .team { height: 30px; border-radius: 2px; background: var(--c, var(--spark)); }
-.row .name { font: 800 24px/1.05 var(--display); text-transform: uppercase; letter-spacing: .02em; }
-.row .name small { display: block; font: 500 14px/1.35 var(--body); text-transform: none; letter-spacing: 0; color: var(--ink-dim); margin-top: 4px; }
-.row .gap { font: 700 13px/1 var(--mono); color: var(--ink-dim); text-align: right; white-space: nowrap; }
-.row[aria-selected="true"] { background: linear-gradient(90deg, rgba(255, 107, 26, .18), transparent 70%); }
-.row[aria-selected="true"] .pos { color: var(--spark); }
-.row[aria-selected="true"] .gap { color: var(--gold); }
-.phone { position: sticky; top: 100px; width: 100%; max-width: 380px; margin: 0 auto; padding: 12px; border-radius: 58px; background: linear-gradient(145deg, #3a3a3e, #111113 40%, #29292d 72%, #0b0b0c); box-shadow: 0 0 0 1px rgba(255, 255, 255, .07), 0 40px 120px rgba(0, 0, 0, .8), 0 0 120px rgba(255, 98, 20, .18); }
-.phone img { width: 100%; height: auto; aspect-ratio: 1320 / 2868; object-fit: cover; border-radius: 47px; transition: opacity .25s; }
-.phone img.fade { opacity: .15; }
-@media (max-width: 900px) { .tower-grid, .voice-grid, .hero .top { grid-template-columns: 1fr; } .phone { position: relative; top: 0; max-width: 320px; } .stage { min-height: 0; aspect-ratio: 1 / 1.08; max-width: 560px; width: 100%; margin: 0 auto; } }
+/* paper: validation and specifications */
+.paper { background: var(--paper); color: var(--paper-ink); }
+.paper .label { color: var(--paper-stone); }
+.paper .label::before { background: #9b8458; }
+.paper h2 em { color: #5f5a52; }
+.paper .lead, .paper p { color: var(--paper-stone); }
+.proof-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); margin-top: 60px; border-top: 1px solid var(--paper-hair); }
+.proof-grid > div { padding: 46px 52px 0 0; }
+.proof-grid > div + div { padding: 46px 0 0 52px; border-left: 1px solid var(--paper-hair); }
+.proof .k { font: 500 11px/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--paper-stone); }
+.proof h3 { font: 500 30px/1.15 var(--serif); margin-top: 14px; }
+.proof .big { font-size: clamp(72px, 8.4vw, 128px); line-height: .95; margin-top: 30px; white-space: nowrap; }
+.proof p { font-size: 15.5px; margin: 22px 0 0; max-width: 52ch; }
+.proof .math { color: #7b6740; margin-top: 22px; display: block; }
+.paper .math small { color: var(--paper-stone); }
+.bars { margin-top: 34px; }
+.bars .b { display: grid; grid-template-columns: 120px minmax(0, 1fr) 58px; gap: 16px; align-items: center; height: 34px; font: 400 13.5px/1.2 var(--sans); color: var(--paper-stone); }
+.bars .track { position: relative; height: 100%; }
+.bars .band2 { position: absolute; top: 0; bottom: 0; left: calc(34 / 45 * 100%); width: calc(2 / 45 * 100%); background: rgba(155, 132, 88, .2); border-inline: 1px solid rgba(155, 132, 88, .65); }
+.bars .fill { position: absolute; left: 0; top: 50%; height: 2px; margin-top: -1px; width: calc(var(--v) / 45 * 100%); background: var(--c); transform-origin: left; transition: transform 1.3s cubic-bezier(.2, .7, .2, 1); }
+.bars .fill::after { content: ""; position: absolute; right: -4px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+.js .bars:not(.in) .fill { transform: scaleX(0); }
+.bars .val { font: 400 14px/1 var(--mono); color: var(--paper-ink); text-align: right; }
+.bars .axis { display: grid; grid-template-columns: 120px minmax(0, 1fr) 58px; gap: 16px; margin-top: 6px; }
+.bars .axis div { position: relative; height: 22px; border-top: 1px solid var(--paper-hair); }
+.bars .axis div span { position: absolute; top: 6px; transform: translateX(-50%); font: 400 10.5px/1 var(--mono); color: var(--paper-stone); }
+.bars .axis div span::before { content: ""; position: absolute; left: 50%; top: -7px; height: 5px; border-left: 1px solid var(--paper-hair); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 18px; font: 400 12.5px/1.3 var(--mono); color: var(--paper-stone); }
+.bars .bandlbl { display: grid; grid-template-columns: 120px minmax(0, 1fr) 58px; gap: 16px; height: 22px; }
+.bars .bandlbl div { position: relative; }
+.bars .bandlbl div span { position: absolute; left: calc(35 / 45 * 100%); transform: translateX(-50%); bottom: 4px; white-space: nowrap; font: 500 11.5px/1 var(--mono); color: #7b6740; letter-spacing: .04em; }
+@media (max-width: 460px) { .bars .bandlbl { grid-template-columns: 92px minmax(0, 1fr) 50px; gap: 10px; } }
+.legend i { display: inline-block; width: 16px; height: 9px; margin-right: 8px; vertical-align: -1px; }
+.paper .method { margin: 48px 0 0; padding-top: 22px; border-top: 1px solid var(--paper-hair); font-size: 13.5px; max-width: 110ch; }
+.method b { font-weight: 500; color: var(--paper-ink); }
+@media (max-width: 900px) { .proof-grid { grid-template-columns: 1fr; } .proof-grid > div, .proof-grid > div + div { padding: 40px 0 0; border-left: 0; } .proof-grid > div + div { border-top: 1px solid var(--paper-hair); margin-top: 40px; } }
+@media (max-width: 460px) { .bars .b, .bars .axis { grid-template-columns: 92px minmax(0, 1fr) 50px; gap: 10px; } }
+.specs-sec { border-top: 1px solid var(--paper-hair); padding-top: clamp(70px, 8vw, 110px); }
+.paper .proof { padding-bottom: clamp(70px, 8vw, 110px); }
+.specs-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(40px, 6vw, 96px); }
+.specs { margin: 0; border-top: 1px solid var(--paper-ink); }
+.specs div { display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr); gap: 24px; padding: 19px 0; border-bottom: 1px solid var(--paper-hair); }
+.specs dt { font: 500 11.5px/1.75 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--paper-stone); }
+.specs dd { margin: 0; font-size: 16.5px; color: var(--paper-ink); }
+.specs dd .n { font: 400 14.5px var(--mono); }
+@media (max-width: 900px) { .specs-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .specs div { grid-template-columns: 1fr; gap: 4px; } }
 
-/* ---------- parc fermé ---------- */
-.classes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 40px; }
-.class { position: relative; overflow: hidden; border-radius: 24px; background: var(--asphalt-2); border: 1px solid var(--line); padding: 26px 24px 24px; }
-.class .tag { font: 800 italic 14px/1 var(--display); letter-spacing: .16em; text-transform: uppercase; color: var(--spark); }
-.class h3 { font-size: 40px; font-weight: 900; font-style: italic; margin-top: 10px; line-height: .9; }
-.class p { color: var(--ink-dim); margin: 12px 0 0; font-size: 15px; }
-.class svg.bike { width: 100%; height: auto; margin-top: 10px; overflow: visible; }
-.bike .ground { stroke: #3a3a3f; stroke-width: 2; }
-.bike .vert { stroke: #3a3a3f; stroke-width: 1.5; stroke-dasharray: 3 6; }
-.bike .arc { fill: none; stroke: var(--spark); stroke-width: 3; stroke-linecap: round; }
-.bike .tyre { fill: #0d0d0e; stroke: var(--ink); stroke-width: 2.5; }
-.bike .body { fill: var(--asphalt-3); stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round; }
-.bike .leathers { fill: var(--spark); }
-.bike .helmet { fill: var(--ink); }
-.bike .stripe { fill: var(--spark); }
-.bike .arm { fill: none; stroke: var(--spark); stroke-width: 9; stroke-linecap: round; }
-.bike .num { font: 900 italic 54px/1 var(--display); fill: var(--ink); }
-.bike .unit { font: 700 13px/1 var(--mono); fill: var(--ink-dim); letter-spacing: .08em; }
-.bike .spark { stroke: var(--gold); stroke-width: 2; stroke-linecap: round; }
-.class .spec { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
-.class .spec span { font: 700 12px/1 var(--mono); padding: 7px 10px; border-radius: 999px; background: var(--asphalt-3); color: var(--ink-dim); text-transform: uppercase; letter-spacing: .04em; }
-@media (max-width: 900px) { .classes { grid-template-columns: 1fr; } }
+/* finale */
+.finale { position: relative; overflow: hidden; text-align: center; padding-block: clamp(150px, 19vw, 260px); isolation: isolate; }
+.finale .bg { position: absolute; inset: 0; z-index: -2; }
+.finale .bg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; filter: saturate(.32) brightness(.62); }
+@media (max-width: 760px) { .finale { padding-block: 100px 300px; } .finale .bg { top: auto; height: 340px; } .finale .bg img { object-position: 38% 50%; } .finale::before { display: none; } .finale .bg img { -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 35%, #000 66%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0%, #000 35%, #000 66%, transparent 100%); filter: saturate(.32) brightness(.8); } }
+.finale::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(10, 10, 10, .7) 0%, rgba(10, 10, 10, .3) 35%, rgba(10, 10, 10, .45) 70%, var(--ink) 100%); }
+.finale .label { justify-content: center; color: var(--bone); }
+.finale .label::after { content: ""; width: 28px; height: 1px; background: var(--gold); }
+.finale h2 { font-size: clamp(60px, 9vw, 144px); margin-top: 26px; line-height: .95; }
+.finale .lead { margin-inline: auto; color: rgba(236, 231, 222, .85); }
+.finale .actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; margin-top: 44px; }
+.finale .actions { flex-direction: column; align-items: center; gap: 26px; }
+.finale .status { margin: 0; font: 400 12.5px/1 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--gold-2); }
 
-/* ---------- free ---------- */
-.free { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 40px; }
-.free div { padding: 24px; border-radius: 20px; border: 1px solid var(--line); background: var(--asphalt-2); }
-.free h3 { font-size: 28px; font-weight: 900; font-style: italic; }
-.free p { margin: 8px 0 0; color: var(--ink-dim); font-size: 15px; }
-@media (max-width: 900px) { .free { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 520px) { .free { grid-template-columns: 1fr; } }
+footer { border-top: 1px solid var(--hair); padding-block: 44px 56px; color: var(--stone-2); font-size: 14px; }
+footer .wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px 48px; align-items: start; }
+footer .links { display: flex; flex-wrap: wrap; gap: 10px 26px; justify-content: flex-end; }
+footer .links a { text-decoration: none; color: var(--stone); }
+footer .links a:hover { color: var(--bone); }
+footer .credit { grid-column: 1 / -1; font-size: 12.5px; }
+footer .credit a { color: var(--stone-2); }
+.safety { max-width: 72ch; }
+@media (max-width: 760px) { footer .wrap { grid-template-columns: 1fr; } footer .links { justify-content: flex-start; } }
 
-/* ---------- finale ---------- */
-.finale { position: relative; overflow: hidden; text-align: center; padding-block: 110px; background: radial-gradient(60% 80% at 50% 100%, rgba(255, 90, 20, .35), transparent 70%); }
-.finale h2 { font-size: clamp(56px, 10vw, 150px); }
-.finale .actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
-.flag { position: absolute; inset: 0 0 auto; height: 28px; background: conic-gradient(var(--ink) 25%, var(--asphalt) 0 50%, var(--ink) 0 75%, var(--asphalt) 0) 0 0 / 28px 28px; opacity: .9; }
-
-footer { border-top: 1px solid var(--line); padding-block: 36px 50px; color: var(--ink-dim); font-size: 14px; }
-footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; justify-content: space-between; }
-footer .links { display: flex; flex-wrap: wrap; gap: 18px; }
-footer .mail { font-family: var(--mono); color: var(--ink); user-select: all; }
-.safety { max-width: 70ch; }
-
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+/* reveal */
+.js .rv { opacity: 0; transform: translateY(18px); transition: opacity 1s ease, transform 1s cubic-bezier(.2, .7, .2, 1); }
+.js .rv.in { opacity: 1; transform: none; }
+.js .screen.mid.rv.in { transform: translateY(-44px); }
+@media (max-width: 900px) { .js .screen.mid.rv.in { transform: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } .js .rv { opacity: 1; transform: none; } .js .bars:not(.in) .fill { transform: none; } .js .chart .lean { stroke-dashoffset: 0; } .js .chart .speed-wrap { clip-path: none; } .track-ui g.ui { opacity: 1; } }
 </style>
 </head>
 <body>
 
-<header class="bar">
+<header class="bar" id="bar">
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="MotoLean"><img src="img/icon.jpg" alt=""><b>Moto<span>Lean</span></b></a>
+    <a class="brand" href="#top" aria-label="MotoLean">Moto<i>Lean</i></a>
     <nav class="nav" aria-label="Sections">
       <a href="#model" data-i18n="navModel">The model</a>
-      <a href="#voice" data-i18n="navVoice">Voice coach</a>
-      <a href="#grid" data-i18n="navGrid">Features</a>
-      <a href="#bikes" data-i18n="navBikes">Bikes</a>
+      <a href="#anatomy" data-i18n="navAnatomy">Anatomy</a>
+      <a href="#screens" data-i18n="navScreens">The app</a>
+      <a href="#proof" data-i18n="navProof">Validation</a>
     </nav>
     <div class="lang" role="group" aria-label="Language">
       <button type="button" id="lang-en" data-lang="en" aria-pressed="true">EN</button>
       <button type="button" id="lang-ru" data-lang="ru" aria-pressed="false">RU</button>
     </div>
-    <a class="cta" href="#get" data-i18n="ctaShort">Get the app</a>
+    <a class="btn line" href="#get"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.6 1.3-.1 1.7-.8 3.3-.8 1.5 0 2 .8 3.3.8 1.4 0 2.2-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.5-1-2.5-4.1zM13.9 5c.7-.9 1.2-2 1.1-3.2-1 0-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg><span>App Store</span></a>
   </div>
 </header>
 
 <main id="top">
   <section class="hero">
-    <div class="wrap top">
-      <div>
-        <div class="hud"><span class="live" data-i18n="hudLive">Live</span><span>T7 · <b>R</b></span><span data-i18n-html="hudLean">Peak <b>44°</b></span><span data-i18n-html="hudScore">Score <b>95</b></span></div>
-        <h1><span class="l" data-i18n="h1a">Physics.</span><span class="l" data-i18n="h1b">Data.</span><span class="l"><em data-i18n="h1c">Cleaner corners.</em></span></h1>
-        <p class="lead" data-i18n="heroLead">Not a toy lean meter. MotoLean builds a mathematical model of every corner you ride: 100&nbsp;Hz sensor fusion, the geometry of your handlebars and a Kalman-filtered trajectory. Seconds after the exit it tells you in your helmet what the numbers say: your lean, a score out of 100 and the one thing to fix.</p>
+    <div class="bg">
+      <img src="https://images.unsplash.com/photo-1514760263916-4ac83991b2e6?auto=format&fit=crop&w=2400&q=72" srcset="https://images.unsplash.com/photo-1514760263916-4ac83991b2e6?auto=format&fit=crop&w=1200&q=72 1200w, https://images.unsplash.com/photo-1514760263916-4ac83991b2e6?auto=format&fit=crop&w=2400&q=72 2400w" sizes="100vw" alt="A racer leaning a motorcycle through a corner, seen through the catch fence" fetchpriority="high">
+      <img class="soft" src="https://images.unsplash.com/photo-1514760263916-4ac83991b2e6?auto=format&fit=crop&w=1200&q=60" alt="" aria-hidden="true">
+      <!-- Same 1000×667 frame as the photo, scaled like object-fit: cover, so the marks stay on the bike. -->
+      <svg class="track-ui" viewBox="0 0 1000 667" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <g class="ui">
+          <line class="hl" x1="470" y1="424" x2="930" y2="424"/>
+          <path class="br" d="M520 197v-22h22M853 175h22v22M875 418v22h-22M542 440h-22v-22"/>
+          <circle class="cp" cx="678" cy="424" r="5"/><path class="cp" d="M678 412v-6M678 436v6M666 424h-6M690 424h6"/>
+          <text class="k" x="875" y="470" text-anchor="end" id="tclock">00:47:12.4</text>
+          <text x="520" y="455"><tspan class="k">φ </tspan><tspan id="tphi">47.2°</tspan></text>
+          <text x="608" y="455"><tspan class="k">v </tspan><tspan id="tv">98 km/h</tspan></text>
+          <text x="710" y="455"><tspan class="k">a </tspan>+0.02 g</text>
+          <text class="g" x="875" y="455" text-anchor="end" id="tph">APEX</text>
+        </g>
+      </svg>
+    </div>
+    <div class="m-read" aria-hidden="true"><span>φ <span id="mphi">47.2°</span> · <span id="mv">98 km/h</span></span><b id="mph">APEX</b></div>
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="label" data-i18n="heroLabel">Cornering telemetry for iPhone</span>
+        <h1><span data-i18n="h1a">Every corner,</span><span><em data-i18n="h1b">measured.</em></span></h1>
+        <p class="lead" data-i18n="heroLead">MotoLean builds a mathematical model of every corner you ride, from 100 Hz motion data, the geometry of your handlebars and a Kalman-filtered trajectory. Seconds after the exit, it tells you in your helmet what the numbers say.</p>
         <div class="actions">
-          <a class="cta" href="#get"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.6 1.3-.1 1.7-.8 3.3-.8 1.5 0 2 .8 3.3.8 1.4 0 2.2-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.5-1-2.5-4.1zM13.9 5c.7-.9 1.2-2 1.1-3.2-1 0-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg><span data-i18n="ctaStore">App Store</span></a>
-          <a class="cta ghost" href="#model" data-i18n="ctaTour">How the model works</a>
+          <a class="btn solid" href="#get"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.6 1.3-.1 1.7-.8 3.3-.8 1.5 0 2 .8 3.3.8 1.4 0 2.2-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.5-1-2.5-4.1zM13.9 5c.7-.9 1.2-2 1.1-3.2-1 0-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg><span data-i18n="ctaStore">App Store</span></a>
+          <a class="btn line" href="#model" data-i18n="ctaTour">How the model works</a>
         </div>
         <p class="soon" data-i18n="soon">Free for iPhone · iOS 17 or later · coming to the App Store soon</p>
       </div>
+      <div class="stats">
+        <div><b class="fig" data-i18n="s1n">100 Hz</b><span data-i18n="s1">raw motion log behind every ride</span></div>
+        <div><b class="fig">12</b><span data-i18n="s2">criteria per corner, in four phases</span></div>
+        <div><b class="fig">≈1°</b><span data-i18n="s3">from turn physics on road test rides</span></div>
+        <div><b class="fig">0</b><span data-i18n="s4">taps while you ride</span></div>
+      </div>
+    </div>
+  </section>
 
-      <div class="stage" aria-label="MotoLean live lean gauge, animated">
-        <div class="rider"><img src="img/icon.jpg" alt="Rider in full leathers leaning a sport bike into a corner, sparks from the knee slider"></div>
-        <div class="race-no" aria-hidden="true">44</div>
-        <div class="gauge-card">
-          <div class="gauge-top"><span data-i18n="lean">Lean</span><span class="mono" id="maxes">L 41° · R 44°</span></div>
-          <div class="gauge">
-            <svg viewBox="0 0 320 170" role="img" aria-label="Lean gauge">
-              <g id="ticks"></g>
-              <path d="M 33.5 133 A 140 140 0 0 1 49 68" stroke="#e1251b" stroke-width="6" fill="none" stroke-linecap="round" opacity=".85"/>
-              <path d="M 286.5 133 A 140 140 0 0 0 271 68" stroke="#e1251b" stroke-width="6" fill="none" stroke-linecap="round" opacity=".85"/>
-              <g id="needle" style="transform-origin: 160px 160px">
-                <rect x="156" y="42" width="8" height="118" rx="4" fill="#ff6b1a"/>
-              </g>
-              <circle cx="160" cy="160" r="12" fill="#2a2a2e"/>
-            </svg>
+  <section class="manifesto">
+    <div class="wrap rv">
+      <span class="label" data-i18n="manLabel">Not a toy</span>
+      <h2 data-i18n-html="manTitle">A gauge gives you a number. <em>A model tells you why.</em></h2>
+      <p class="lead" data-i18n="manLead">Most lean apps read one angle off the phone and stop there. MotoLean reconstructs the whole corner: where you braked, how you tipped in, where the apex really was and when the throttle came back. Then it checks itself against the physics of the turn before it scores you.</p>
+    </div>
+  </section>
+
+  <figure class="band">
+    <img src="https://images.unsplash.com/photo-1611004061856-ccc3cbe944b2?auto=format&fit=crop&w=2400&q=70" srcset="https://images.unsplash.com/photo-1611004061856-ccc3cbe944b2?auto=format&fit=crop&w=1200&q=70 1200w, https://images.unsplash.com/photo-1611004061856-ccc3cbe944b2?auto=format&fit=crop&w=2400&q=70 2400w" sizes="100vw" alt="" loading="lazy">
+    <figcaption><div class="wrap"><span class="math">φ = arctan( <i>v</i> · <i>ω</i> / <i>g</i> )</span><small data-i18n="bandCap">The lean a steady turn demands</small></div></figcaption>
+  </figure>
+
+  <section id="model">
+    <div class="wrap">
+      <span class="label" data-i18n="modelLabel">The model</span>
+      <h2 style="margin-top:26px" data-i18n-html="modelTitle">Five stages, all on your iPhone.</h2>
+      <p class="lead" data-i18n="modelLead">No cloud and no guesswork. Every ride runs through the same pipeline: live while you ride, then again, more precisely, the moment you stop.</p>
+      <ol class="stages">
+        <li class="rv"><span class="n">01</span><h3 data-i18n="m1t">Raw signal</h3><p data-i18n="m1">Attitude, rotation, gravity and acceleration at 100 Hz, plus every field of every GPS fix. After the ride each 0.1 s step is rebuilt from all readings in its window, so handlebar vibration cannot alias into the lean.</p><span class="math"><i>f</i> = 100 <small>HZ</small> → 10 <small>HZ</small></span></li>
+        <li class="rv"><span class="n">02</span><h3 data-i18n="m2t">Bike geometry</h3><p data-i18n="m2">Handlebar calibration finds the steering axis and the lock stops. Lean is measured in the bike's own frame, then corrected for the bar angle, so tight turns read the same left and right.</p><span class="math"><b>tan</b> <i>δ</i> = <i>L ω</i> <b>cos</b> <i>φ</i> / <i>v</i> <b>cos</b> <i>ε</i></span></li>
+        <li class="rv"><span class="n">03</span><h3 data-i18n="m3t">Time alignment</h3><p data-i18n="m3">GPS speed and course lag the motion sensors by about a second. MotoLean measures that lag on every ride and moves each fix back to the moment it describes.</p><span class="math">Δ<i>t</i> ≈ 1.1 <small>S</small></span></li>
+        <li class="rv"><span class="n">04</span><h3 data-i18n="m4t">Kalman filter</h3><p data-i18n="m4">Speed and accelerometer bias are estimated with a Kalman filter and a backward RTS smoother; gyro, speed and GPS fuse into a 10 Hz trajectory. The accelerometer is trusted only after it passes a regression test against GPS.</p><span class="math"><i>x</i> = [ <i>v</i>, <i>b</i> ]<sup>T</sup>, &nbsp;<i>r</i> ≥ 0.6</span></li>
+        <li class="rv"><span class="n">05</span><h3 data-i18n="m5t">Corner model</h3><p data-i18n="m5">Curvature from the gyro locates the apex; braking, tip-in and throttle are placed on a distance axis around it. Twelve criteria produce four phase scores, each with a confidence level.</p><span class="math"><i>κ</i> = Δ<i>ψ</i> / Δ<i>s</i></span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="anatomy" id="anatomy">
+    <div class="wrap">
+      <span class="label" data-i18n="anLabel">Anatomy of a corner</span>
+      <h2 style="margin-top:26px" data-i18n-html="anTitle">Four phases, twelve criteria, one sentence.</h2>
+      <p class="lead" data-i18n="anLead">Every corner is laid out on a distance axis around its apex and scored out of 100. Speed and lean on their own never earn points: only timing and smoothness do.</p>
+      <div class="chart-wrap rv">
+        <div class="chart-scroll"><svg class="chart" id="chart" viewBox="0 0 1190 370" role="img" aria-label="Schematic of one corner: speed falls through braking to the apex while lean rises at tip-in, holds through the apex and falls on the exit.">
+          <rect class="ph" x="60" y="40" width="300" height="290"/><rect class="ph alt" x="360" y="40" width="170" height="290"/><rect class="ph" x="530" y="40" width="190" height="290"/><rect class="ph alt" x="720" y="40" width="400" height="290"/>
+          <text class="pt" x="72" y="62" data-i18n="ph1">Braking</text><text class="pt" x="372" y="62" data-i18n="ph2">Tip-in</text><text class="pt" x="542" y="62" data-i18n="ph3">Apex</text><text class="pt" x="732" y="62" data-i18n="ph4">Exit</text>
+          <line class="gl" x1="60" y1="112" x2="1120" y2="112"/><line class="gl" x1="60" y1="221" x2="1120" y2="221"/>
+          <line class="ax" x1="60" y1="330" x2="1120" y2="330"/>
+          <line class="apex" x1="625" y1="40" x2="625" y2="330"/>
+          <g class="speed-wrap"><path class="speed" d="M60 92 C 160 92, 240 96, 300 130 S 440 228, 520 236 S 600 240, 625 240 S 700 236, 760 214 S 940 140, 1120 104"/></g>
+          <path class="lean" d="M60 330 L 330 330 C 380 330, 420 150, 470 122 S 560 108, 625 110 S 700 112, 740 150 S 860 320, 940 330 L 1120 330"/>
+          <text class="v" x="636" y="100">41°</text><text class="gv" x="636" y="262" id="cspd">62 km/h</text>
+          <text x="60" y="356">−120 m</text><text x="625" y="356" text-anchor="middle" data-i18n="apexLbl">apex</text><text x="1120" y="356" text-anchor="end">+80 m</text>
+          <text x="48" y="116" text-anchor="end">40°</text><text x="48" y="225" text-anchor="end">20°</text><text x="48" y="334" text-anchor="end">0°</text>
+          <g class="sax"><line x1="1128" y1="123" x2="1134" y2="123"/><line x1="1128" y1="185" x2="1134" y2="185"/><line x1="1128" y1="246" x2="1134" y2="246"/></g>
+          <text class="gs" x="1140" y="127">100</text><text class="gs" x="1140" y="189">80</text><text class="gs" x="1140" y="250">60</text><text class="gs" x="1140" y="62" id="cunit">km/h</text>
+        </svg></div>
+        <div class="chart-legend"><span><i></i><span data-i18n="lgLean">Lean</span></span><span><i class="s"></i><span data-i18n="lgSpeed">Speed</span></span><span data-i18n="lgNote">Illustrative corner · distance from the apex</span></div>
+      </div>
+      <div class="criteria rv">
+        <div><h3><span data-i18n="ph1">Braking</span><span class="pts">25</span></h3><ol>
+          <li><span data-i18n="c11">No hard braking deep in the lean</span><b>10</b></li>
+          <li><span data-i18n="c12">Smooth release of the brake</span><b>8</b></li>
+          <li><span data-i18n="c13">No second slowdown inside the corner</span><b>7</b></li></ol></div>
+        <div><h3><span data-i18n="ph2">Tip-in</span><span class="pts">25</span></h3><ol>
+          <li><span data-i18n="c21">One motion, no pauses of 0.5 s or more</span><b>12</b></li>
+          <li><span data-i18n="c22">Peak lean no later than early in the exit</span><b>8</b></li>
+          <li><span data-i18n="c23">No acceleration while tipping in</span><b>5</b></li></ol></div>
+        <div><h3><span data-i18n="ph3">Apex</span><span class="pts">25</span></h3><ol>
+          <li><span data-i18n="c31">No line corrections</span><b>10</b></li>
+          <li><span data-i18n="c32">Minimum speed no later than the apex</span><b>8</b></li>
+          <li><span data-i18n="c33">Speed no longer falling at the apex</span><b>7</b></li></ol></div>
+        <div><h3><span data-i18n="ph4">Exit</span><span class="pts">25</span></h3><ol>
+          <li><span data-i18n="c41">Throttle soon after the apex</span><b>10</b></li>
+          <li><span data-i18n="c42">Acceleration without dips</span><b>8</b></li>
+          <li><span data-i18n="c43">No lean added on the exit</span><b>7</b></li></ol></div>
+      </div>
+      <div class="spoken">
+        <figure class="quote rv">
+          <small data-i18n="qWhen">+3.0 s after the exit · in your helmet</small>
+          <p data-i18n="tl4">“41, left. 72 points. Open the throttle earlier.”</p>
+        </figure>
+        <div class="points rv">
+          <div class="point"><h3 data-i18n="p1t">One tip, not a lecture</h3><p data-i18n="p1">The model ranks the four phases and speaks only about the weakest, so you know exactly what to try in the next corner.</p></div>
+          <div class="point"><h3 data-i18n="p2t">Any Bluetooth headset</h3><p data-i18n="p2">Cardo, Sena or earbuds. Prompts play over your music or dip it for a second.</p></div>
+          <div class="point"><h3 data-i18n="p3t">Hands stay on the bars</h3><p data-i18n="p3">Records and speaks with the screen off, pauses itself at stops, and shows the ride on the Lock Screen and in the Dynamic Island.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screens-sec" id="screens">
+    <div class="wrap">
+      <div class="screens-head rv">
+        <span class="label" data-i18n="scrLabel">The app</span>
+        <h2 data-i18n-html="scrTitle">After the ride, the analysis.</h2>
+        <p class="lead" data-i18n="scrLead">Real screens from MotoLean 1.0. Every corner is kept, scored and set beside every other pass of the same bend.</p>
+      </div>
+      <div class="screens">
+        <figure class="screen rv"><div class="frame"><img data-shot="ride" src="img/ride.jpg" alt="Ride replay screen" loading="lazy" width="598" height="1300"></div><figcaption><b data-i18n="sc2">Ride replay</b><span data-i18n="sc2s">Kalman-smoothed route, coloured by lean</span></figcaption></figure>
+        <figure class="screen mid rv"><div class="frame"><span class="co l" style="top:18.6%;--x:24.5%"><span data-i18n="co1">Score: 12 criteria, 100 points</span></span><span class="co l" style="top:46%;--x:37%"><span data-i18n="co2">Tip-in, apex, throttle: placed by the model</span></span><span class="co r" style="top:51.6%;--x:72%"><span data-i18n="co3">Speed, Kalman-smoothed at 10 Hz</span></span><span class="co r" style="top:71.5%;--x:80%"><span data-i18n="co4">Lean on the same axis</span></span><img data-shot="corner" src="img/corner.jpg" alt="Corner breakdown screen" loading="lazy" width="598" height="1300"></div><figcaption><b data-i18n="sc1">Corner breakdown</b><span data-i18n="sc1s">Speed and lean through the corner, every phase scored</span></figcaption></figure>
+        <figure class="screen rv"><div class="frame"><img data-shot="analytics" src="img/analytics.jpg" alt="Progress screen" loading="lazy" width="598" height="1300"></div><figcaption><b data-i18n="sc3">Progress</b><span data-i18n="sc3s">Every pass of the same corner, side by side</span></figcaption></figure>
+      </div>
+      <p class="swipe" data-i18n="swipe">Swipe · 3 screens</p>
+    </div>
+  </section>
+
+  <div class="paper">
+    <section class="proof" id="proof">
+      <div class="wrap">
+        <span class="label" data-i18n="proofLabel">Validation</span>
+        <h2 style="margin-top:26px" data-i18n-html="proofTitle">Checked against <em>the physics of the turn.</em></h2>
+        <div class="proof-grid">
+          <div class="rv">
+            <span class="k" data-i18n="v1k">Road · four test rides</span>
+            <h3 data-i18n="v1t">Measured lean matches the lean the turn demands</h3>
+            <div class="big fig">0.96–1.00</div>
+            <p data-i18n="v1">Measured lean divided by the lean that speed and turn rate require, in steady corners. No fudge factors: the old empirical corrections were removed once the model matched.</p>
+            <span class="math">φ<small>PHYS</small> = arctan( <i>v</i> · <i>ω</i> / <i>g</i> )</span>
           </div>
-          <div class="readout"><span class="deg mono" id="deg">0°</span><span class="side" id="side"></span></div>
-        </div>
-        <div class="bubble off" id="bubble" aria-live="polite">
-          <div class="ear"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="#fff"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></div>
-          <p><span id="say">“44, right. 95 points.”</span><small data-i18n="sayWhen">3 s after the exit</small></p>
-        </div>
-      </div>
-    </div>
-    <div class="kerb" aria-hidden="true"></div>
-    <div class="wrap">
-      <div class="strip">
-        <div><b>100&nbsp;Hz</b><span data-i18n="s1">raw motion log behind every ride</span></div>
-        <div><b>12</b><span data-i18n="s2">criteria per corner across 4 phases</span></div>
-        <div><b>≈1°</b><span data-i18n="s3">from turn physics on road test rides</span></div>
-        <div><b>0</b><span data-i18n="s4">taps during a ride</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="model" id="model">
-    <div class="wrap">
-      <span class="eyebrow" data-i18n="modelEyebrow">Not a toy</span>
-      <h2 style="margin-top:18px" data-i18n-html="modelTitle">A mathematical model <em>of every corner</em></h2>
-      <p class="lead" data-i18n="modelLead">Most lean apps read one number off the phone. MotoLean runs a five-stage pipeline on your iPhone, measures itself against the physics of the turn, and only then gives you a score. No cloud, no guesswork.</p>
-      <div class="pipe">
-        <article class="stage-card"><span class="n">01</span><h3 data-i18n="m1t">Raw signal</h3><p data-i18n="m1">Attitude, rotation, gravity and acceleration at 100&nbsp;Hz, plus every field of every GPS fix. After the ride each 0.1&nbsp;s step is rebuilt from all readings in its window, so bar vibration can't alias into the lean.</p><code>100 Hz → 10 Hz · anti-alias</code></article>
-        <article class="stage-card"><span class="n">02</span><h3 data-i18n="m2t">Bike geometry</h3><p data-i18n="m2">Handlebar calibration finds the steering axis and the lock stops. Lean is measured in the bike's frame, then corrected for the bar angle, so tight turns read the same left and right.</p><code>tan δ = L·ω·cos φ / (v·cos ε)</code></article>
-        <article class="stage-card"><span class="n">03</span><h3 data-i18n="m3t">Time alignment</h3><p data-i18n="m3">GPS speed and course lag the motion sensors by about a second. MotoLean measures that lag on each ride and shifts every fix back to the moment it describes.</p><code>Δt course ≈ 1.1 s · position 0.3 s</code></article>
-        <article class="stage-card"><span class="n">04</span><h3 data-i18n="m4t">Kalman filter</h3><p data-i18n="m4">Speed and accelerometer bias are estimated with a Kalman filter and a backward RTS smoother; gyro, speed and GPS fuse into a 10&nbsp;Hz trajectory. The accelerometer is used only if it passes a regression test against GPS.</p><code>x = [v, b]ᵀ · RTS · r ≥ 0.6</code></article>
-        <article class="stage-card"><span class="n">05</span><h3 data-i18n="m5t">Corner model</h3><p data-i18n="m5">Curvature from the gyro locates the apex; braking, tip-in and throttle are found on a distance axis around it. Twelve criteria give four phase scores, each with a confidence level.</p><code>κ = Δψ / Δs · apex: κ ≥ 0.8 κmax</code></article>
-      </div>
-      <div class="proof">
-        <div>
-          <span class="tag" data-i18n="v1tag">Validated · road</span>
-          <h3 data-i18n="v1t">Lean matches the physics of the turn</h3>
-          <div class="big mono">0.96–1.00</div>
-          <p data-i18n="v1">Measured lean divided by the lean that speed and turn rate demand, in steady corners on four road test rides. No fudge factors: the old empirical corrections were removed once the model matched.</p>
-          <div class="formula">φ_phys = atan(v·ω / g)</div>
-        </div>
-        <div>
-          <span class="tag" data-i18n="v2tag">Validated · gymkhana</span>
-          <h3 data-i18n="v2t">Figure-eights at 14–15 km/h</h3>
-          <div class="bars" role="img" aria-label="Peak lean in figure-eights: 42.4 and 41.0 degrees before the steering correction, 33.4 and 33.5 degrees after it; turn physics gives 34 to 36 degrees.">
-            <div class="b"><span data-i18n="b1">Phone, left</span><span class="track"><span class="band"></span><span class="fill" style="--v:42.4;--c:#5b5852"></span></span><span class="val">42.4°</span></div>
-            <div class="b"><span data-i18n="b2">Phone, right</span><span class="track"><span class="band"></span><span class="fill" style="--v:41.0;--c:#5b5852"></span></span><span class="val">41.0°</span></div>
-            <div class="b"><span data-i18n="b3">Model, left</span><span class="track"><span class="band"></span><span class="fill" style="--v:33.4;--c:var(--left)"></span></span><span class="val">33.4°</span></div>
-            <div class="b"><span data-i18n="b4">Model, right</span><span class="track"><span class="band"></span><span class="fill" style="--v:33.5;--c:var(--spark)"></span></span><span class="val">33.5°</span></div>
+          <div class="rv">
+            <span class="k" data-i18n="v2k">Gymkhana · figure-eights at 14–15 km/h</span>
+            <h3 data-i18n="v2t">The steering model removes 8–9° of phantom lean</h3>
+            <div class="bars" id="bars" role="img" aria-label="Peak lean in figure-eights: 42.4 and 41.0 degrees before the steering correction, 33.4 and 33.5 degrees after it; turn physics gives 34 to 36 degrees.">
+              <div class="bandlbl"><span></span><div><span data-i18n="bandLbl">physics 34–36°</span></div><span></span></div>
+              <div class="b"><span data-i18n="b1">Raw, left</span><span class="track"><span class="band2"></span><span class="fill" style="--v:42.4;--c:#a9a297"></span></span><span class="val">42.4°</span></div>
+              <div class="b"><span data-i18n="b2">Raw, right</span><span class="track"><span class="band2"></span><span class="fill" style="--v:41.0;--c:#a9a297"></span></span><span class="val">41.0°</span></div>
+              <div class="b"><span data-i18n="b3">Model, left</span><span class="track"><span class="band2"></span><span class="fill" style="--v:33.4;--c:#141413"></span></span><span class="val">33.4°</span></div>
+              <div class="b"><span data-i18n="b4">Model, right</span><span class="track"><span class="band2"></span><span class="fill" style="--v:33.5;--c:#141413"></span></span><span class="val">33.5°</span></div>
+              <div class="axis"><span></span><div><span style="left:0">0°</span><span style="left:22.22%">10°</span><span style="left:44.44%">20°</span><span style="left:66.67%">30°</span><span style="left:88.89%">40°</span></div><span></span></div>
+            </div>
+            <div class="legend"><span><i style="background:#a9a297;height:2px;vertical-align:3px"></i><span data-i18n="lg1">Before steering correction</span></span><span><i style="background:#141413;height:2px;vertical-align:3px"></i><span data-i18n="lg3">With the steering model</span></span></div>
+            <p data-i18n="v2">With the phone on the bars, turning the handlebars tilts the phone and inflates the lean. The steering model takes it out, and the two sides land within a tenth of a degree of each other.</p>
           </div>
-          <div class="legend"><span><i style="background:#5b5852"></i><span data-i18n="lg1">Before steering correction</span></span><span><i style="background:rgba(48,209,88,.55)"></i><span data-i18n="lg2">Turn physics 34–36°</span></span></div>
-          <p data-i18n="v2">With the phone on the bars, turning the handlebars tilts the phone and inflates the lean by 8–9°. The steering model removes it, and both sides land within a degree of each other.</p>
         </div>
+        <p class="method" data-i18n-html="method"><b>Method.</b> Road: steady-state corners from four rides; physics lean from GPS speed and gyro turn rate. Gymkhana: one session of figure-eights with the phone on the handlebars, peak lean per side, the same ride before and after the correction. Sensor accuracy is ±2–5°; the app measures the bike, not the rider's centre of mass.</p>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="voice">
-    <div class="wrap">
-      <span class="eyebrow" data-i18n="voiceEyebrow">From data to one sentence</span>
-      <h2 style="margin-top:18px" data-i18n-html="voiceTitle">Your coach rides <em>in the helmet</em></h2>
-      <div class="voice-grid">
-        <div class="timeline" aria-label="What happens after a corner">
-          <div class="tl"><span class="t">−4.2 s</span><p data-i18n-html="tl1">Braking ends, tip-in<small>The bike rolls in to 41° left</small></p></div>
-          <div class="tl"><span class="t">0.0 s</span><p data-i18n-html="tl2">Apex<small>Slowest point of the corner</small></p></div>
-          <div class="tl"><span class="t">+2.1 s</span><p data-i18n-html="tl3">Exit, bike stands up<small>The model scores 12 criteria in 4 phases</small></p></div>
-          <div class="tl say"><span class="t">+3.0 s</span><p><span data-i18n="tl4">“41, left. 72 points. Open the throttle earlier.”</span><span class="wave" aria-hidden="true" id="wave"></span></p></div>
+    <section class="specs-sec" id="specs">
+      <div class="wrap specs-grid">
+        <div class="rv">
+          <span class="label" data-i18n="specLabel">Specifications</span>
+          <h2 style="margin-top:26px" data-i18n-html="specTitle">Built for every bike in your garage.</h2>
+          <p class="lead" data-i18n="specLead">Sport, naked or track day: each motorcycle keeps its own handlebar calibration, so switching bikes never costs accuracy.</p>
         </div>
-        <div class="points">
-          <div class="point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg><div><h3 data-i18n="p1t">Any Bluetooth headset</h3><p data-i18n="p1">Cardo, Sena or earbuds. Prompts play over your music or dip it for a second.</p></div></div>
-          <div class="point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"/><path d="m9 12 2 2 4-4"/></svg><div><h3 data-i18n="p2t">One tip, not a lecture</h3><p data-i18n="p2">The model ranks the four phases and speaks only about the weakest, so you know exactly what to try next time.</p></div></div>
-          <div class="point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg><div><h3 data-i18n="p3t">Screen off, pocket or mount</h3><p data-i18n="p3">Records and speaks in the background, with the ride on the Lock Screen and in the Dynamic Island.</p></div></div>
-        </div>
+        <dl class="specs rv">
+          <div><dt data-i18n="k1">Sampling</dt><dd data-i18n-html="d1"><span class="n">100 Hz</span> raw log · <span class="n">10 Hz</span> model · up to <span class="n">25 Hz</span> live</dd></div>
+          <div><dt data-i18n="k2">Estimation</dt><dd data-i18n="d2">Kalman filter with RTS smoothing; GPS lag measured on every ride</dd></div>
+          <div><dt data-i18n="k3">Geometry</dt><dd data-i18n="d3">Steering axis, lock stops and bar-angle correction, per motorcycle</dd></div>
+          <div><dt data-i18n="k4">Scoring</dt><dd data-i18n-html="d4"><span class="n">12</span> criteria · <span class="n">4</span> phases · <span class="n">100</span> points · confidence level</dd></div>
+          <div><dt data-i18n="k5">Fairness</dt><dd data-i18n="d5">Technique only. More speed or more lean never earns points</dd></div>
+          <div><dt data-i18n="k6">Export</dt><dd data-i18n="d6">GPX (GPS points or smoothed trajectory) and CSV</dd></div>
+          <div><dt data-i18n="k7">Privacy</dt><dd data-i18n="d7">Runs entirely on your iPhone. No account, no ads, no tracking</dd></div>
+          <div><dt data-i18n="k8">Languages</dt><dd data-i18n="d8">13, voice included</dd></div>
+          <div><dt data-i18n="k9">Price</dt><dd data-i18n="d9">Free. Every feature, no subscription</dd></div>
+        </dl>
       </div>
-    </div>
-  </section>
-
-  <div class="kerb thin" aria-hidden="true"></div>
-
-  <section id="grid">
-    <div class="wrap">
-      <span class="eyebrow" data-i18n="gridEyebrow">The starting grid</span>
-      <h2 style="margin-top:18px" data-i18n-html="gridTitle">Everything after <em>the chequered flag</em></h2>
-      <p class="lead" data-i18n="gridLead">Pick a row to see the real screen.</p>
-      <div class="tower-grid">
-        <div class="tower" role="tablist" aria-label="Features">
-          <div class="tower-head"><span data-i18n="towerHead">Classification</span><span class="mono">MOTOLEAN 1.0</span></div>
-          <button class="row" role="tab" id="row-dash" data-shot="dash" style="--c:#ff6b1a" aria-selected="true"><span class="pos">P1</span><span class="team"></span><span class="name" data-i18n-html="r1">Live lean<small>Gauge, max left and right, speed, corners</small></span><span class="gap">LEADER</span></button>
-          <button class="row" role="tab" id="row-corner" data-shot="corner" style="--c:#30d158" aria-selected="false"><span class="pos">P2</span><span class="team"></span><span class="name" data-i18n-html="r2">Corner breakdown<small>Each phase scored, with the note on what to fix</small></span><span class="gap">+0.112</span></button>
-          <button class="row" role="tab" id="row-ride" data-shot="ride" style="--c:#3fd2ff" aria-selected="false"><span class="pos">P3</span><span class="team"></span><span class="name" data-i18n-html="r3">Ride replay<small>Kalman-smoothed route by lean, charts, GPX and CSV</small></span><span class="gap">+0.240</span></button>
-          <button class="row" role="tab" id="row-analytics" data-shot="analytics" style="--c:#ffc35a" aria-selected="false"><span class="pos">P4</span><span class="team"></span><span class="name" data-i18n-html="r4">Progress<small>Every pass of the same corner, side by side</small></span><span class="gap">+0.391</span></button>
-          <button class="row" role="tab" id="row-profile" data-shot="profile" style="--c:#bf5af2" aria-selected="false"><span class="pos">P5</span><span class="team"></span><span class="name" data-i18n-html="r5">Rider profile<small>Left vs right balance and phase statistics across all rides</small></span><span class="gap">+0.508</span></button>
-          <button class="row" role="tab" id="row-cal" data-shot="dash" style="--c:#e1251b" aria-selected="false"><span class="pos">P6</span><span class="team"></span><span class="name" data-i18n-html="r6">Handlebar geometry<small>Steering axis, lock stops and bar-angle correction</small></span><span class="gap">+0.733</span></button>
-        </div>
-        <div class="phone"><img id="shot" src="img/dash.jpg" alt="MotoLean screen" width="1320" height="2868"></div>
-      </div>
-    </div>
-  </section>
-
-  <div class="kerb" aria-hidden="true"></div>
-
-  <section id="bikes">
-    <div class="wrap">
-      <span class="eyebrow" data-i18n="bikesEyebrow">Parc fermé</span>
-      <h2 style="margin-top:18px" data-i18n-html="bikesTitle">Sport, naked <em>or track day</em></h2>
-      <p class="lead" data-i18n="bikesLead">Add every bike to the Garage. Each keeps its own handlebar calibration, so swapping bikes never costs you accuracy.</p>
-      <div class="classes">
-        <article class="class">
-          <span class="tag" data-i18n="c1tag">Supersport</span>
-          <h3 data-i18n="c1">Full fairing</h3>
-          <svg class="bike" viewBox="0 0 400 230" data-lean="47" data-pose="tuck" role="img" aria-label="Rear view of a motorcycle leaning 47 degrees"></svg>
-          <p data-i18n="c1p">Deep leans, fast direction changes. The 100 Hz log catches every flick.</p>
-          <div class="spec"><span>100 Hz</span><span data-i18n="c1s">Max GPS</span><span>Live Activity</span></div>
-        </article>
-        <article class="class">
-          <span class="tag" data-i18n="c2tag">Naked · Roadster</span>
-          <h3 data-i18n="c2">Bars wide</h3>
-          <svg class="bike" viewBox="0 0 400 230" data-lean="39" data-pose="upright" role="img" aria-label="Rear view of a motorcycle leaning 39 degrees"></svg>
-          <p data-i18n="c2p">Upright position, big steering input. The steering model keeps left and right honest.</p>
-          <div class="spec"><span data-i18n="c2s1">Garage</span><span data-i18n="c2s2">Bar calibration</span><span>GPX</span></div>
-        </article>
-        <article class="class">
-          <span class="tag" data-i18n="c3tag">Track day</span>
-          <h3 data-i18n="c3">Knee down</h3>
-          <svg class="bike" viewBox="0 0 400 230" data-lean="54" data-pose="hang" role="img" aria-label="Rear view of a motorcycle leaning 54 degrees"></svg>
-          <p data-i18n="c3p">Session after session on the same corners. See which pass was cleanest, phase by phase.</p>
-          <div class="spec"><span data-i18n="c3s1">Progress</span><span data-i18n="c3s2">Repeated corners</span><span>CSV</span></div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section id="free" style="padding-top:20px">
-    <div class="wrap">
-      <span class="eyebrow" data-i18n="freeEyebrow">No strings</span>
-      <h2 style="margin-top:18px" data-i18n-html="freeTitle">Free. Private. <em>No account.</em></h2>
-      <div class="free">
-        <div><h3 data-i18n="f1t">Free</h3><p data-i18n="f1">No ads, no subscription. Optional tips unlock nothing.</p></div>
-        <div><h3 data-i18n="f2t">On-device</h3><p data-i18n="f2">The whole model runs on your iPhone. No cloud, no sign-up, no tracking.</p></div>
-        <div><h3 data-i18n="f3t">13 languages</h3><p data-i18n="f3">English, Русский, Deutsch, Español, Français, Italiano, 日本語 and more.</p></div>
-        <div><h3 data-i18n="f4t">Fair scoring</h3><p data-i18n="f4">Scores rate technique. More speed or lean never earns points.</p></div>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <section class="finale" id="get">
-    <div class="flag" aria-hidden="true"></div>
-    <div class="wrap">
-      <span class="eyebrow" data-i18n="finEyebrow">Lights out</span>
-      <h2 style="margin-top:18px" data-i18n-html="finTitle">Every corner <em>counts</em></h2>
-      <p class="lead" style="margin-inline:auto" data-i18n="finLead">A full corner model, free for iPhone. MotoLean is in review now and will be on the App Store soon.</p>
+    <div class="bg"><img src="https://images.unsplash.com/photo-1775433379550-54334bddecec?auto=format&fit=crop&w=2400&q=70" alt="" loading="lazy"></div>
+    <div class="wrap rv">
+      <span class="label" data-i18n="finLabel">MotoLean 1.0 · iPhone</span>
+      <h2 data-i18n-html="finTitle">Ride <em>the numbers.</em></h2>
+      <p class="lead" data-i18n="finLead">A complete corner model, free for iPhone.</p>
       <div class="actions">
-        <a class="cta" href="https://muilton.github.io/motolean-legal/" data-i18n="finSupport">Support and FAQ</a>
+        <p class="status" data-i18n="finStatus">App Store · in review · coming soon</p>
+        <a class="btn solid" href="https://muilton.github.io/motolean-legal/" data-i18n="finSupport">Support and FAQ</a>
       </div>
     </div>
   </section>
@@ -442,67 +543,78 @@ footer .mail { font-family: var(--mono); color: var(--ink); user-select: all; }
     <div class="links">
       <a href="https://muilton.github.io/motolean-legal/privacy.html" data-i18n="privacy">Privacy Policy</a>
       <a href="https://muilton.github.io/motolean-legal/" data-i18n="support">Support</a>
-      <span class="mail">muilton.apps@gmail.com</span>
+      <a href="mailto:muilton.apps@gmail.com" data-i18n="contact">Contact</a>
     </div>
+    <div class="credit"><span data-i18n="credit">Photography via Unsplash:</span> <a href="https://unsplash.com/photos/fjVnFfC1-BY">Harlie Raethel</a> · <a href="https://unsplash.com/photos/4ldc6lB9oBw">Nick van der Wiel</a> · <a href="https://unsplash.com/photos/A-15Xn_QSwc" data-i18n="credit3">track photo</a></div>
   </div>
 </footer>
 
 <script>
 (() => {
+  document.documentElement.classList.add("js");
   const I18N = {
     ru: {
-      navModel: "Модель", navVoice: "Голос", navGrid: "Возможности", navBikes: "Мотоциклы",
-      ctaShort: "Скачать", ctaStore: "App Store", ctaTour: "Как устроена модель",
-      hudLive: "Live", hudLean: "Пик <b>44°</b>", hudScore: "Оценка <b>95</b>",
-      h1a: "Физика.", h1b: "Данные.", h1c: "Чистые повороты.",
-      heroLead: "Не игрушечный креномер. MotoLean строит математическую модель каждого поворота: датчики 100 Гц, геометрия руля и траектория с фильтром Калмана. Через пару секунд после выхода он говорит в шлем, что показали цифры: наклон, оценку из 100 и главное, что исправить.",
+      navModel: "Модель", navAnatomy: "Анатомия", navScreens: "Приложение", navProof: "Проверка",
+      ctaStore: "App Store", ctaTour: "Как устроена модель",
+      heroLabel: "Телеметрия поворотов для iPhone",
+      h1a: "Каждый поворот\u00a0—", h1b: "в цифрах.",
+      heroLead: "MotoLean строит математическую модель каждого поворота: датчики 100 Гц, геометрия руля и траектория с фильтром Калмана. Через пару секунд после выхода он говорит в шлем, что показали цифры.",
       soon: "Бесплатно для iPhone · iOS 17 и новее · скоро в App Store",
-      lean: "Наклон", sayWhen: "через 3 с после выхода",
-      s1: "сырой лог датчиков в каждой поездке", s2: "критериев на поворот в 4 фазах", s3: "от физики поворота в тестовых поездках по дороге", s4: "нажатий во время езды",
-      modelEyebrow: "Не игрушка", modelTitle: "Математическая модель <em>каждого поворота</em>",
-      modelLead: "Обычные приложения читают из телефона одно число. MotoLean прогоняет данные через пять этапов прямо на iPhone, сверяет себя с физикой поворота и только потом ставит оценку. Без облака и без догадок.",
-      m1t: "Сырой сигнал", m1: "Ориентация, вращение, гравитация и ускорение 100 раз в секунду плюс все поля каждого фикса GPS. После поездки каждый шаг 0,1 с собирается из всех показаний своего окна, и вибрация руля не попадает в наклон.",
-      m2t: "Геометрия мотоцикла", m2: "Калибровка руля находит рулевую ось и упоры. Наклон считается в осях мотоцикла и поправляется на угол руля, поэтому тугие повороты влево и вправо читаются одинаково.",
-      m3t: "Синхронизация", m3: "Скорость и курс GPS отстают от датчиков примерно на секунду. MotoLean измеряет это запаздывание в каждой поездке и сдвигает каждый фикс к моменту, который он описывает.",
-      m4t: "Фильтр Калмана", m4: "Скорость и смещение акселерометра оцениваются фильтром Калмана с обратным сглаживанием RTS; гироскоп, скорость и GPS сводятся в траекторию 10 Гц. Акселерометр используется, только если проходит регрессионную проверку по GPS.",
-      m5t: "Модель поворота", m5: "Кривизна по гироскопу находит апекс; торможение, закладка и газ ищутся на оси расстояния вокруг него. Двенадцать критериев дают оценки четырёх фаз, у каждой — уровень достоверности.",
-      v1tag: "Проверено · дорога", v1t: "Наклон совпадает с физикой поворота",
-      v1: "Измеренный наклон, делённый на наклон, которого требуют скорость и скорость поворота, в установившихся поворотах четырёх тестовых поездок по дороге. Без подгоночных коэффициентов: эмпирические поправки убраны, когда модель совпала.",
-      v2tag: "Проверено · джимхана", v2t: "Восьмёрки на 14–15 км/ч",
-      b1: "Телефон, влево", b2: "Телефон, вправо", b3: "Модель, влево", b4: "Модель, вправо",
-      lg1: "Без поправки на руль", lg2: "Физика поворота 34–36°",
-      v2: "Телефон на руле наклоняется вместе с поворотом руля и добавляет к наклону 8–9°. Модель руля это убирает, и стороны сходятся в пределах градуса.",
-      voiceEyebrow: "От данных к одной фразе", voiceTitle: "Тренер едет <em>в твоём шлеме</em>",
-      tl1: "Конец торможения, закладка<small>Мотоцикл ложится до 41° влево</small>",
-      tl2: "Апекс<small>Самая низкая скорость в повороте</small>",
-      tl3: "Выход, мотоцикл поднимается<small>Модель оценивает 12 критериев в 4 фазах</small>",
+      s1n: "100 Гц", s1: "сырой лог датчиков в каждой поездке", s2: "критериев на поворот в четырёх фазах", s3: "от физики поворота в тестовых поездках по дороге", s4: "нажатий во время езды",
+      manLabel: "Не игрушка", manTitle: "Прибор показывает число. <em>Модель объясняет почему.</em>",
+      manLead: "Обычные приложения читают из телефона один угол — и на этом всё. MotoLean восстанавливает поворот целиком: где вы тормозили, как заложили мотоцикл, где на самом деле был апекс и когда вернулся газ. А перед оценкой сверяет себя с физикой поворота.",
+      bandCap: "Наклон, которого требует установившийся поворот",
+      modelLabel: "Модель", modelTitle: "Пять этапов — и всё на iPhone.",
+      modelLead: "Без облака и без догадок. Каждая поездка проходит один и тот же путь: вживую во время езды и ещё раз, точнее, сразу после остановки.",
+      m1t: "Сырой сигнал", m1: "Ориентация, вращение, гравитация и ускорение 100 раз в секунду плюс все поля каждой отметки GPS. После поездки каждый шаг 0,1 с собирается из всех показаний своего окна, и вибрация руля не попадает в наклон.",
+      m2t: "Геометрия мотоцикла", m2: "Калибровка руля находит рулевую ось и упоры. Наклон считается в осях самого мотоцикла и поправляется на угол руля, поэтому тугие повороты влево и вправо читаются одинаково.",
+      m3t: "Синхронизация", m3: "Скорость и курс GPS отстают от датчиков примерно на секунду. MotoLean измеряет это запаздывание в каждой поездке и возвращает каждую отметку к моменту, который она описывает.",
+      m4t: "Фильтр Калмана", m4: "Скорость и смещение акселерометра оцениваются фильтром Калмана с обратным сглаживанием RTS; гироскоп, скорость и GPS сводятся в траекторию 10 Гц. Акселерометру доверяют, только если он проходит регрессионную проверку по GPS.",
+      m5t: "Модель поворота", m5: "Кривизна по гироскопу находит апекс; торможение, закладка и газ размещаются на оси расстояния вокруг него. Двенадцать критериев дают оценки четырёх фаз, у каждой — уровень достоверности.",
+      anLabel: "Анатомия поворота", anTitle: "Четыре фазы, двенадцать критериев, одна фраза.",
+      anLead: "Каждый поворот раскладывается по расстоянию до апекса и оценивается из 100. Скорость и наклон сами по себе баллов не дают — только своевременность и плавность.",
+      ph1: "Торможение", ph2: "Закладка", ph3: "Апекс", ph4: "Выход",
+      lgLean: "Наклон", lgSpeed: "Скорость", lgNote: "Иллюстративный поворот · расстояние от апекса", apexLbl: "апекс",
+      c11: "Нет сильного торможения в глубоком наклоне", c12: "Плавное отпускание тормоза", c13: "Нет повторного замедления в повороте",
+      c21: "Одним движением, без пауз от 0,5 с", c22: "Пик наклона не позже начала выхода", c23: "Нет разгона во время закладки",
+      c31: "Нет коррекций траектории", c32: "Минимум скорости не позже апекса", c33: "В апексе скорость уже не падает",
+      c41: "Газ вскоре после апекса", c42: "Разгон без провалов", c43: "На выходе наклон не добавляется",
+      qWhen: "+3,0 с после выхода · в шлеме",
       tl4: "«41, влево. 72 балла. Открывайся раньше.»",
-      p1t: "Любая Bluetooth-гарнитура", p1: "Cardo, Sena или наушники. Подсказки звучат поверх музыки или приглушают её на секунду.",
-      p2t: "Один совет, а не лекция", p2: "Модель сравнивает четыре фазы и говорит только о самой слабой: ясно, что попробовать в следующий раз.",
-      p3t: "Экран выключен", p3: "Пишет и говорит в фоне, поездка видна на экране блокировки и в Dynamic Island.",
-      gridEyebrow: "Стартовая решётка", gridTitle: "Всё, что после <em>клетчатого флага</em>", gridLead: "Выберите строку, чтобы увидеть настоящий экран.",
-      towerHead: "Классификация",
-      r1: "Наклон вживую<small>Прибор, максимумы влево и вправо, скорость, повороты</small>",
-      r2: "Разбор поворота<small>Оценка каждой фазы и что исправить</small>",
-      r3: "Повтор поездки<small>Трек со сглаживанием Калмана в цвете наклона, графики, GPX и CSV</small>",
-      r4: "Прогресс<small>Все проезды одного поворота рядом</small>",
-      r5: "Профиль райдера<small>Баланс лево/право и статистика фаз по всем поездкам</small>",
-      r6: "Геометрия руля<small>Рулевая ось, упоры и поправка на угол руля</small>",
-      bikesEyebrow: "Парк-ферме", bikesTitle: "Спорт, нейкед <em>или трек-день</em>",
-      bikesLead: "Добавьте в Гараж все мотоциклы. У каждого своя калибровка руля, поэтому смена мотоцикла не стоит точности.",
-      c1tag: "Суперспорт", c1: "Полный пластик", c1p: "Глубокие наклоны и быстрые перекладки. Лог 100 Гц ловит каждую.", c1s: "GPS макс.",
-      c2tag: "Нейкед · Родстер", c2: "Широкий руль", c2p: "Посадка прямо, большие углы руля. Модель руля держит левое и правое честными.", c2s1: "Гараж", c2s2: "Калибровка руля",
-      c3tag: "Трек-день", c3: "Колено в асфальт", c3p: "Сессия за сессией по тем же поворотам. Видно, какой проезд был чище, по фазам.", c3s1: "Прогресс", c3s2: "Повторные повороты",
-      freeEyebrow: "Без подвоха", freeTitle: "Бесплатно. Приватно. <em>Без аккаунта.</em>",
-      f1t: "Бесплатно", f1: "Без рекламы и подписок. Чаевые по желанию ничего не открывают.",
-      f2t: "На устройстве", f2: "Вся модель работает на iPhone. Без облака, регистрации и слежки.",
-      f3t: "13 языков", f3: "Русский, English, Українська, Deutsch, Español, Français, 日本語 и другие.",
-      f4t: "Честная оценка", f4: "Оценивается техника. Большая скорость или наклон баллов не добавляют.",
-      finEyebrow: "Огни гаснут", finTitle: "Каждый поворот <em>на счету</em>",
-      finLead: "Полная модель поворота, бесплатно для iPhone. MotoLean сейчас на проверке и скоро появится в App Store.",
-      finSupport: "Поддержка и вопросы",
+      p1t: "Один совет, а не лекция", p1: "Модель сравнивает четыре фазы и говорит только о самой слабой: ясно, что попробовать в следующем повороте.",
+      p2t: "Любая Bluetooth-гарнитура", p2: "Cardo, Sena или наушники. Подсказки звучат поверх музыки или приглушают её на секунду.",
+      p3t: "Руки на руле", p3: "Пишет и говорит с выключенным экраном, сам ставит паузу на остановках, поездка видна на экране блокировки и в Dynamic Island.",
+      scrLabel: "Приложение", scrTitle: "После поездки — разбор.",
+      scrLead: "Настоящие экраны MotoLean 1.0. Каждый поворот сохраняется, оценивается и встаёт рядом со всеми проездами того же поворота.",
+      co1: "Оценка: 12 критериев, 100 баллов", co2: "Закладку, апекс и газ расставляет модель", co3: "Скорость, фильтр Калмана, 10 Гц", co4: "Наклон на той же оси",
+      sc1: "Разбор поворота", sc1s: "Скорость и наклон по ходу поворота, оценка каждой фазы",
+      sc2: "Повтор поездки", sc2s: "Трек со сглаживанием Калмана в цвете наклона",
+      sc3: "Прогресс", sc3s: "Все проезды одного поворота рядом",
+      swipe: "Листайте · 3 экрана",
+      proofLabel: "Проверка", proofTitle: "Сверено <em>с физикой поворота.</em>",
+      v1k: "Дорога · четыре тестовые поездки", v1t: "Измеренный наклон совпадает с расчётным",
+      v1: "Измеренный наклон, делённый на наклон, которого требуют скорость и угловая скорость, в установившихся поворотах. Без подгоночных коэффициентов: эмпирические поправки убраны, когда модель совпала.",
+      v2k: "Джимхана · восьмёрки на скорости 14–15 км/ч", v2t: "Модель руля убирает 8–9° фантомного наклона",
+      b1: "Сырые, влево", b2: "Сырые, вправо", b3: "Модель, влево", b4: "Модель, вправо",
+      bandLbl: "физика 34–36°", lg1: "Без поправки на руль", lg3: "С моделью руля", lg2: "Физика поворота, 34–36°",
+      v2: "Телефон на руле наклоняется вместе с поворотом руля и завышает наклон. Модель руля это убирает, и стороны сходятся в пределах десятой доли градуса.",
+      method: "<b>Методика.</b> Дорога: установившиеся повороты из четырёх поездок; наклон по физике считается из скорости GPS и угловой скорости гироскопа. Джимхана: одна сессия восьмёрок с телефоном на руле, пиковый наклон в каждую сторону, одна и та же поездка до и после поправки. Точность датчиков ±2–5°; приложение измеряет мотоцикл, а не центр масс райдера.",
+      specLabel: "Характеристики", specTitle: "Для каждого мотоцикла в гараже.",
+      specLead: "Спорт, нейкед или трек-день: у каждого мотоцикла своя калибровка руля, поэтому при смене мотоцикла точность не теряется.",
+      k1: "Частота", d1: "сырой лог <span class=\"n\">100 Гц</span> · модель <span class=\"n\">10 Гц</span> · вживую до <span class=\"n\">25 Гц</span>",
+      k2: "Оценивание", d2: "Фильтр Калмана со сглаживанием RTS; задержка GPS измеряется в каждой поездке",
+      k3: "Геометрия", d3: "Рулевая ось, упоры и поправка на угол руля — для каждого мотоцикла",
+      k4: "Оценка", d4: "<span class=\"n\">12</span> критериев · <span class=\"n\">4</span> фазы · <span class=\"n\">100</span> баллов · уровень достоверности",
+      k5: "Честность", d5: "Только техника. Большая скорость или наклон баллов не добавляют",
+      k6: "Экспорт", d6: "GPX (точки GPS или сглаженная траектория) и CSV",
+      k7: "Приватность", d7: "Всё считается на iPhone. Без аккаунта, рекламы и слежки",
+      k8: "Языки", d8: "13, включая голос",
+      k9: "Цена", d9: "Бесплатно. Все функции, без подписки",
+      finLabel: "MotoLean 1.0 · iPhone", finTitle: "Езда <em>в цифрах.</em>",
+      finLead: "Полная модель поворота — бесплатно для iPhone.",
+      finStatus: "App Store · на проверке · скоро", finSupport: "Поддержка и вопросы",
       safety: "Надёжно закрепите телефон и смотрите на дорогу. MotoLean — не устройство безопасности. Ездите в пределах своих возможностей и правил; пределы ищите только на закрытой трассе.",
-      privacy: "Политика конфиденциальности", support: "Поддержка",
+      privacy: "Политика конфиденциальности", support: "Поддержка", contact: "Связаться", credit: "Фото с Unsplash:", credit3: "фото трассы",
     },
   };
   const EN = {};
@@ -510,119 +622,55 @@ footer .mail { font-family: var(--mono); color: var(--ink); user-select: all; }
   document.querySelectorAll("[data-i18n-html]").forEach(el => EN[el.dataset.i18nHtml] = el.innerHTML);
   I18N.en = EN;
 
-  const SAY = {
-    en: [["44, right. 95 points.", 44], ["41, left. 72 points. Open the throttle earlier.", -41], ["38, right. 88 points.", 38], ["36, left. 64 points. Weak corner. Lean in with one motion.", -36]],
-    ru: [["44, вправо. 95 баллов.", 44], ["41, влево. 72 балла. Открывайся раньше.", -41], ["38, вправо. 88 баллов.", 38], ["36, влево. 64 балла. Слабо. Наклоняйся одним движением.", -36]],
-  };
   let lang = "en";
-  try { lang = localStorage.getItem("ml-lang") || (navigator.language || "").startsWith("ru") && "ru" || "en"; } catch (e) {}
+  try { lang = localStorage.getItem("ml-lang") || ((navigator.language || "").startsWith("ru") ? "ru" : "en"); } catch (e) {}
+  const q = new URLSearchParams(location.search).get("lang");
+  if (q) lang = q;
+  const kmh = () => lang === "ru" ? "км/ч" : "km/h";
 
   function setLang(l) {
     lang = I18N[l] ? l : "en";
     const d = I18N[lang];
     document.documentElement.lang = lang;
-    document.querySelectorAll("[data-i18n]").forEach(el => { const v = d[el.dataset.i18n]; if (v != null) el.textContent = v; });
-    document.querySelectorAll("[data-i18n-html]").forEach(el => { const v = d[el.dataset.i18nHtml]; if (v != null) el.innerHTML = v; });
+    // Russian: keep dashes and one-letter prepositions off the start of a line.
+    const nb = v => lang === "ru" ? v.replace(/ —/g, "\u00a0—").replace(/ iPhone/g, "\u00a0iPhone").replace(/(^|[\s(«])(в|с|и|к|о|у|а|на|по|до|не|за|из|от)\s/gi, "$1$2\u00a0") : v;
+    document.querySelectorAll("[data-i18n]").forEach(el => { const v = d[el.dataset.i18n]; if (v != null) el.textContent = nb(v); });
+    document.querySelectorAll("[data-i18n-html]").forEach(el => { const v = d[el.dataset.i18nHtml]; if (v != null) el.innerHTML = nb(v); });
     document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+    document.querySelectorAll("img[data-shot]").forEach(img => img.src = `img/${lang === "ru" ? "ru_" : ""}${img.dataset.shot}.jpg`);
+    document.getElementById("cspd").textContent = `62 ${kmh()}`; document.getElementById("cunit").textContent = kmh();
     try { localStorage.setItem("ml-lang", lang); } catch (e) {}
-    showShot(current, true);
-    drawBikes();
   }
   document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
 
-  /* timing tower → phone screen */
-  const shot = document.getElementById("shot");
-  let current = "dash";
-  function showShot(name, instant) {
-    current = name;
-    const src = `img/${lang === "ru" ? "ru_" : ""}${name}.jpg`;
-    if (instant) { shot.src = src; return; }
-    shot.classList.add("fade");
-    setTimeout(() => { shot.src = src; shot.onload = () => shot.classList.remove("fade"); }, 180);
-  }
-  const rows = [...document.querySelectorAll(".row")];
-  rows.forEach(r => r.addEventListener("click", () => {
-    rows.forEach(x => x.setAttribute("aria-selected", String(x === r)));
-    showShot(r.dataset.shot);
-  }));
+  /* nav turns solid once the hero scrolls away */
+  const bar = document.getElementById("bar");
+  const onScroll = () => bar.classList.toggle("solid", scrollY > 40);
+  addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
-  /* gauge ticks */
-  const ticks = document.getElementById("ticks");
-  for (let a = -60; a <= 60; a += 10) {
-    const r1 = a % 30 === 0 ? 112 : 120, r2 = 132, rad = (a - 90) * Math.PI / 180;
-    const x1 = 160 + r1 * Math.cos(rad), y1 = 160 + r1 * Math.sin(rad), x2 = 160 + r2 * Math.cos(rad), y2 = 160 + r2 * Math.sin(rad);
-    ticks.insertAdjacentHTML("beforeend", `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#77736d" stroke-width="${a % 30 === 0 ? 3 : 1.6}" stroke-linecap="round"/>`);
-    if (a % 30 === 0 && a !== 0) {
-      const tx = 160 + 96 * Math.cos(rad), ty = 160 + 96 * Math.sin(rad) + 5;
-      ticks.insertAdjacentHTML("beforeend", `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" fill="#a29d96" font-size="13" font-family="JetBrains Mono, monospace" text-anchor="middle">${Math.abs(a)}</text>`);
-    }
-  }
+  /* reveal on scroll; the chart and bars draw in once visible */
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .12 });
+  document.querySelectorAll(".rv, #bars, #chart").forEach(el => io.observe(el));
 
-  /* a lap of corners: the needle leans in, holds, stands up; then the voice prompt */
-  const needle = document.getElementById("needle"), deg = document.getElementById("deg"), side = document.getElementById("side");
-  const bubble = document.getElementById("bubble"), say = document.getElementById("say");
+  /* hero tracking readout: the bike in the photo is at the apex, so only the fine figures move */
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function draw(v) {
-    needle.style.transform = `rotate(${v}deg)`;
-    needle.querySelector("rect").setAttribute("fill", v < -0.5 ? "#3fd2ff" : "#ff6b1a");
-    deg.textContent = `${Math.round(Math.abs(v))}°`;
-    side.textContent = v < -0.5 ? (lang === "ru" ? "← лев" : "← L") : v > 0.5 ? (lang === "ru" ? "прав →" : "R →") : "";
-    side.style.color = v < 0 ? "#3fd2ff" : "#ff6b1a";
+  const mphi = document.getElementById("mphi"), mv = document.getElementById("mv"), mph = document.getElementById("mph");
+  const tphi = document.getElementById("tphi"), tv = document.getElementById("tv"), tph = document.getElementById("tph"), tclock = document.getElementById("tclock");
+  function readout(now) {
+    const j = Math.sin(now / 700) * .25 + Math.sin(now / 263) * .08;
+    tphi.textContent = `${(47.2 + j).toFixed(1)}°`;
+    tv.textContent = `${Math.round(98 + Math.sin(now / 1900) * 1.2)} ${kmh()}`;
+    tph.textContent = lang === "ru" ? "АПЕКС" : "APEX";
+    mphi.textContent = tphi.textContent; mv.textContent = tv.textContent; mph.textContent = tph.textContent;
+    const c = 47 * 60 + 12.4 + now / 1000;
+    tclock.textContent = `00:${String(Math.floor(c / 60) % 60).padStart(2, "0")}:${(c % 60).toFixed(1).padStart(4, "0")}`;
   }
-  if (reduce) { draw(44); bubble.classList.remove("off"); }
-  else {
-    let i = 0, t0 = performance.now();
-    const LEN = 5200;
-    const ease = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
-    function frame(now) {
-      const [, peak] = SAY[lang][i % 4];
-      const p = (now - t0) / LEN;
-      let v;
-      if (p < .28) v = peak * ease(p / .28);
-      else if (p < .5) v = peak + Math.sin(p * 40) * 1.2;
-      else if (p < .72) v = peak * (1 - ease((p - .5) / .22));
-      else v = Math.sin(p * 30) * .6;
-      draw(v);
-      if (p > .74 && bubble.classList.contains("off") && p < 1) { say.textContent = `“${SAY[lang][i % 4][0]}”`; bubble.classList.remove("off"); }
-      if (p >= 1) { bubble.classList.add("off"); i++; t0 = now; }
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  }
+  readout(0);
+  if (!reduce) { let last = 0; (function tick(now) { if (now - last > 100) { last = now; readout(now); } requestAnimationFrame(tick); })(0); }
 
-  /* rear-view lean graphics, as on race broadcasts: tyre, bike and rider rotated about the contact patch */
-  function drawBikes() { document.querySelectorAll("svg.bike").forEach(svg => {
-    const a = +svg.dataset.lean, pose = svg.dataset.pose, cx = 150, cy = 206;
-    const rad = a * Math.PI / 180, R = 150;
-    const ax = cx - R * Math.sin(rad), ay = cy - R * Math.cos(rad);
-    const hang = pose === "hang" ? 26 : pose === "tuck" ? 10 : 0;   // rider's body off the bike, toward the inside
-    const crouch = pose === "upright" ? 0 : 14;
-    // Seen from behind: back of the helmet with a stripe, shoulders over the tank, arms to the bars.
-    const h = hang, up = pose === "upright" ? 12 : 0;
-    const rider = `
-      ${pose === "hang" ? `<path class="leathers" d="M${-16 - h * .5} -104 L-60 -46 L-52 -40 L-30 -76 L-10 -98 Z"/>` : ""}
-      <path class="arm" d="M${-24 - h * .7} ${-126 - up} L-34 -96 M${24 - h * .7} ${-126 - up} L34 -96"/>
-      <path class="leathers" d="M${-28 - h * .7} ${-124 - up} Q${-h * .7} ${-140 - up} ${28 - h * .7} ${-124 - up} L${18 - h * .4} -100 L${-18 - h * .4} -100 Z"/>
-      <circle class="helmet" cx="${-h}" cy="${-150 - up}" r="18"/>
-      <rect class="stripe" x="${-h - 4}" y="${-168 - up}" width="8" height="36" rx="3"/>`;
-    svg.innerHTML = `
-      <line class="ground" x1="10" y1="${cy}" x2="390" y2="${cy}"/>
-      <line class="vert" x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy - 170}"/>
-      <path class="arc" d="M${cx} ${cy - R} A ${R} ${R} 0 0 0 ${ax.toFixed(1)} ${ay.toFixed(1)}" stroke-dasharray="2 9"/>
-      <g transform="rotate(${-a} ${cx} ${cy})">
-        <rect class="tyre" x="${cx - 13}" y="${cy - 64}" width="26" height="66" rx="13"/>
-        <path class="body" d="M${cx - 34} ${cy - 56} Q${cx} ${cy - 50} ${cx + 34} ${cy - 56} L${cx + 24} ${cy - 102} Q${cx} ${cy - 108} ${cx - 24} ${cy - 102} Z"/>
-        <path class="arm" d="M${cx - 46} ${cy - 96} L${cx + 46} ${cy - 96}" style="stroke:#f3f0eb;stroke-width:4"/>
-        <g transform="translate(${cx} ${cy})">${rider}</g>
-      </g>
-      ${pose === "hang" ? `<path class="spark" d="M${cx - 66} ${cy - 4} l-22 -10 M${cx - 62} ${cy - 2} l-30 2 M${cx - 70} ${cy - 6} l-14 -18"/>` : ""}
-      <text class="num" x="252" y="96">${a}°</text>
-      <text class="unit" x="254" y="118">${lang === "ru" ? "НАКЛОН" : "LEAN"}</text>`;
-  }); }
-
-  /* voice waveform */
-  const wave = document.getElementById("wave");
-  for (let k = 0; k < 28; k++) wave.insertAdjacentHTML("beforeend", `<i style="height:${10 + ((k * 37) % 24)}px;animation-delay:${(k % 7) * -0.13}s"></i>`);
+  /* on a narrow screen, start the chart scrolled to the apex */
+  const cs = document.querySelector(".chart-scroll");
+  if (cs && cs.scrollWidth > cs.clientWidth) cs.scrollLeft = cs.scrollWidth * (625 / 1190) - cs.clientWidth / 2;
 
   setLang(lang);
 })();
