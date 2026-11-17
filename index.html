@@ -33,7 +33,7 @@
   /* Data colours, the same as in the app: left, right, speed, score. They glow on dark grounds. */
   --c-left: #5fd0ff;
   --c-right: #ffa24a;
-  --c-speed: #6ee08a;
+  --c-speed: #b38cff;
   --c-good: #4fd88c;
   --serif: var(--font);
   --sans: var(--font);
@@ -106,7 +106,7 @@ section { padding-block: clamp(100px, 13vw, 190px); }
 .track-ui .k { fill: rgba(236, 231, 222, .72); }
 .track-ui .g { fill: var(--gold-2); }
 .track-ui .vphi { fill: var(--c-right); filter: drop-shadow(0 0 4px rgba(255, 162, 74, .7)); }
-.track-ui .vspd { fill: var(--c-speed); filter: drop-shadow(0 0 4px rgba(110, 224, 138, .6)); }
+.track-ui .vspd { fill: var(--c-speed); filter: drop-shadow(0 0 4px rgba(179, 140, 255, .6)); }
 .track-ui g.ui { opacity: 0; animation: ui-in 1.4s .6s ease forwards; }
 @keyframes ui-in { to { opacity: 1; } }
 @media (max-width: 999px) { .track-ui { display: none; } .hero { min-height: 0; padding-top: var(--mh); } .hero .bg { bottom: auto; height: calc(var(--mh) + 40px); } .hero .bg img { object-position: 84% 45%; } .hero::before { bottom: auto; height: calc(var(--mh) + 41px); background: linear-gradient(0deg, var(--ink) 0%, rgba(10, 10, 10, 0) 28%, rgba(10, 10, 10, 0) 82%, rgba(10, 10, 10, .6) 100%); } .m-read { display: flex; } }
@@ -116,7 +116,7 @@ section { padding-block: clamp(100px, 13vw, 190px); }
 .m-read { display: none; position: absolute; left: var(--pad); right: var(--pad); top: calc(var(--mh) - 54px); justify-content: space-between; font: 400 12px/1 var(--mono); letter-spacing: .08em; color: rgba(236, 231, 222, .85); font-variant-numeric: tabular-nums; }
 .m-read b { font-weight: 400; color: var(--gold-2); }
 .m-read #mphi { color: var(--c-right); text-shadow: 0 0 10px rgba(255, 162, 74, .6); }
-.m-read #mv { color: var(--c-speed); text-shadow: 0 0 10px rgba(110, 224, 138, .5); }
+.m-read #mv { color: var(--c-speed); text-shadow: 0 0 10px rgba(179, 140, 255, .5); }
 @media (max-width: 999px) { .m-read { display: flex; } }
 .hero .lead { max-width: 46ch; }
 .hero h1 { font-size: clamp(46px, 6.8vw, 108px); line-height: .98; margin-top: 26px; }
@@ -165,7 +165,7 @@ section { padding-block: clamp(100px, 13vw, 190px); }
 .chart .ax { stroke: var(--hair-2); stroke-width: 1; }
 .chart .gl { stroke: var(--hair); stroke-width: 1; }
 .chart .lean { fill: none; stroke: var(--c-right); stroke-width: 2.2; filter: drop-shadow(0 0 5px rgba(255, 162, 74, .65)); }
-.chart .speed { fill: none; stroke: var(--c-speed); stroke-width: 2; filter: drop-shadow(0 0 5px rgba(110, 224, 138, .55)); }
+.chart .speed { fill: none; stroke: var(--c-speed); stroke-width: 2; filter: drop-shadow(0 0 5px rgba(179, 140, 255, .55)); }
 .chart .apex { stroke: var(--gold-2); stroke-width: 1; stroke-dasharray: 2 4; }
 .chart text { font: 400 12.5px var(--mono); fill: var(--stone); letter-spacing: .04em; }
 .chart text.gs { fill: var(--c-speed); }
