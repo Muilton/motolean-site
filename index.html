@@ -76,7 +76,7 @@ section { padding-block: clamp(100px, 13vw, 190px); }
 .brand { font: 600 21px/1 var(--serif); text-decoration: none; letter-spacing: -.02em; }
 .brand i { font-style: normal; color: var(--gold-2); }
 .nav { display: flex; gap: 30px; margin-left: auto; font: 400 12.5px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; }
-.nav a { text-decoration: none; color: var(--stone); transition: color .2s; }
+.nav a { text-decoration: none; color: var(--stone); transition: color .2s; white-space: nowrap; }
 .nav a:hover { color: var(--bone); }
 .lang { display: flex; gap: 2px; font: 500 12px/1 var(--sans); letter-spacing: .14em; }
 .lang button { background: none; border: 0; color: var(--stone-2); font: inherit; letter-spacing: inherit; padding: 8px 6px; cursor: pointer; }
@@ -89,7 +89,8 @@ section { padding-block: clamp(100px, 13vw, 190px); }
 .btn.line:hover { border-color: var(--bone); }
 .btn small { font: 400 10.5px/1 var(--sans); letter-spacing: .14em; opacity: .6; }
 .bar .btn { padding: 11px 16px; font-size: 11.5px; gap: 8px; }
-@media (max-width: 900px) { .nav { display: none; } .lang { margin-left: auto; } .bar .wrap { gap: 14px; } }
+@media (max-width: 1080px) { .nav { gap: 22px; letter-spacing: .12em; } }
+@media (max-width: 960px) { .nav { display: none; } .lang { margin-left: auto; } .bar .wrap { gap: 14px; } }
 
 /* hero */
 .hero { position: relative; min-height: max(760px, 100svh); display: flex; flex-direction: column; justify-content: flex-end; padding: 150px 0 0; overflow: hidden; isolation: isolate; }
@@ -333,6 +334,21 @@ section { padding-block: clamp(100px, 13vw, 190px); }
 .method b { font-weight: 500; color: var(--paper-ink); }
 @media (max-width: 900px) { .proof-grid { grid-template-columns: 1fr; } .proof-grid > div, .proof-grid > div + div { padding: 40px 0 0; border-left: 0; } .proof-grid > div + div { border-top: 1px solid var(--paper-hair); margin-top: 40px; } }
 @media (max-width: 460px) { .bars .b, .bars .axis { grid-template-columns: 92px minmax(0, 1fr) 50px; gap: 10px; } }
+.donate { border-top: 1px solid var(--hair); background: radial-gradient(60% 55% at 85% 15%, rgba(221, 202, 166, .08), transparent 70%), radial-gradient(45% 50% at 10% 90%, rgba(79, 216, 140, .05), transparent 70%), var(--ink); }
+.dons { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 56px; }
+.don { display: flex; flex-direction: column; gap: 14px; padding: 30px 28px 26px; border: 1px solid var(--hair); border-radius: 22px; background: rgba(236, 231, 222, .025); color: var(--bone); text-decoration: none; min-height: 270px; transition: border-color .25s, background .25s; }
+.don[href]:hover { border-color: var(--hair-2); background: rgba(236, 231, 222, .05); }
+.don .ic { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; background: rgba(221, 202, 166, .12); border: 1px solid rgba(221, 202, 166, .28); color: var(--gold-2); }
+.don .ic svg { width: 21px; height: 21px; }
+.don h3 { font: 500 22px/1.2 var(--sans); margin-top: 6px; }
+.don p { margin: 0; color: var(--stone); font-size: 15px; line-height: 1.55; }
+.don .tiers { display: flex; flex-wrap: wrap; gap: 6px; }
+.don .tiers span { font: 400 12px/1 var(--mono); padding: 7px 10px; border: 1px solid var(--hair); border-radius: 999px; color: var(--stone); }
+.don .go { margin-top: auto; padding-top: 8px; font: 500 11.5px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--gold-2); }
+.don .go.off { color: var(--stone-2); }
+.don:not(.live) .go.on, .don.live .go.off { display: none; }
+.donate .note { margin-top: 26px; font-size: 13.5px; color: var(--stone-2); max-width: 70ch; }
+@media (max-width: 900px) { .dons { grid-template-columns: 1fr; } .don { min-height: 0; } }
 .specs-sec { border-top: 1px solid var(--paper-hair); padding-top: clamp(70px, 8vw, 110px); }
 .paper .proof { padding-bottom: clamp(70px, 8vw, 110px); }
 .specs-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(40px, 6vw, 96px); }
@@ -387,6 +403,7 @@ footer .credit a { color: var(--stone-2); }
       <a href="#anatomy" data-i18n="navAnatomy">Anatomy</a>
       <a href="#screens" data-i18n="navScreens">The app</a>
       <a href="#proof" data-i18n="navProof">Validation</a>
+      <a href="#donate" data-i18n="navDonate">Support us</a>
     </nav>
     <div class="lang" role="group" aria-label="Language">
       <button type="button" id="lang-en" data-lang="en" aria-pressed="true">EN</button>
@@ -616,6 +633,40 @@ footer .credit a { color: var(--stone-2); }
     </section>
   </div>
 
+  <section class="donate" id="donate">
+    <div class="wrap">
+      <div class="rv">
+        <span class="label" data-i18n="donLabel">Support the project</span>
+        <h2 style="margin-top:26px" data-i18n-html="donTitle">Free for every rider. <em>Kept going by those who can.</em></h2>
+        <p class="lead" data-i18n="donLead">No subscription, no ads, no account — and it stays that way. If MotoLean makes your riding better, chip in: every tip goes into new features and more test rides.</p>
+      </div>
+      <div class="dons rv">
+        <a class="don live" data-don="app" href="#get">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 15.6s-3.2-1.9-3.2-4.1a1.8 1.8 0 0 1 3.2-1.1 1.8 1.8 0 0 1 3.2 1.1c0 2.2-3.2 4.1-3.2 4.1z"/></svg></span>
+          <h3 data-i18n="donAppT">Tip Jar in the app</h3>
+          <p data-i18n="donAppD">Settings → Tip Jar. A one-time tip through your App Store account — nothing to sign up for.</p>
+          <div class="tiers"><span data-i18n="donT1">Coffee $0.99</span><span data-i18n="donT2">Full tank $4.99</span><span data-i18n="donT3">Track day $19.99</span><span data-i18n="donT4">Full service $50</span></div>
+          <span class="go on" data-i18n="donAppGo">Get MotoLean →</span>
+        </a>
+        <a class="don" data-don="patreon">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.6M20 12a8 8 0 0 1-13.7 5.6"/><path d="M17.5 2.8v3.8h-3.8M6.5 21.2v-3.8h3.8"/></svg></span>
+          <h3>Patreon</h3>
+          <p data-i18n="donPatD">Monthly support. Early builds, ride notes and a say in what comes next.</p>
+          <span class="go on" data-i18n="donGo">Support →</span>
+          <span class="go off" data-i18n="donSoon">Coming soon</span>
+        </a>
+        <a class="don" data-don="boosty">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2.5 5 13.5h6l-1 8 8-11h-6l1-8z"/></svg></span>
+          <h3>Boosty</h3>
+          <p data-i18n="donBooD">One-off or monthly, with cards that work in Russia and the CIS.</p>
+          <span class="go on" data-i18n="donGo">Support →</span>
+          <span class="go off" data-i18n="donSoon">Coming soon</span>
+        </a>
+      </div>
+      <p class="note" data-i18n="donNote">Tips are voluntary and unlock nothing: every feature is free for everyone.</p>
+    </div>
+  </section>
+
   <section class="finale" id="get">
     <div class="bg"><img src="img/photo/track-2400.jpg" srcset="img/photo/track-1200.jpg 1200w, img/photo/track-2400.jpg 2400w" sizes="100vw" alt="" loading="lazy"></div>
     <div class="wrap rv">
@@ -645,9 +696,18 @@ footer .credit a { color: var(--stone-2); }
 <script>
 (() => {
   document.documentElement.classList.add("js");
+  // Donation links: paste a URL to turn a card on; an empty one shows "Coming soon".
+  // appStore: the app's App Store page once it is live (until then the card scrolls to #get).
+  const DONATE = { appStore: "", patreon: "", boosty: "" };
+  document.querySelectorAll(".don[data-don]").forEach(card => {
+    const key = card.dataset.don === "app" ? "appStore" : card.dataset.don;
+    const url = DONATE[key];
+    if (url) { card.href = url; card.target = "_blank"; card.rel = "noopener"; card.classList.add("live"); }
+    else if (card.dataset.don !== "app") { card.removeAttribute("href"); card.classList.remove("live"); card.setAttribute("aria-disabled", "true"); }
+  });
   const I18N = {
     ru: {
-      navVoice: "Голосовой тренер", navModel: "Модель", navAnatomy: "Анатомия", navScreens: "Приложение", navProof: "Проверка",
+      navVoice: "Голосовой тренер", navModel: "Модель", navAnatomy: "Анатомия", navScreens: "Приложение", navProof: "Проверка", navDonate: "Поддержать",
       ctaStore: "App Store", ctaTour: "Как устроена модель",
       heroLabel: "Личный тренер в шлеме · на каждом повороте",
       h1a: "Каждый поворот\u00a0—", h1b: "в цифрах.",
@@ -715,6 +775,13 @@ footer .credit a { color: var(--stone-2); }
       k9: "Цена", d9: "Бесплатно. Все функции, без подписки",
       finLabel: "MotoLean 1.0 · iPhone", finTitle: "Езда <em>в цифрах.</em>",
       finLead: "Полная модель поворота — бесплатно для iPhone.",
+      donLabel: "Поддержать проект", donTitle: "Бесплатно для каждого. <em>Держится на тех, кто может помочь.</em>",
+      donLead: "Без подписки, рекламы и аккаунта — и так останется. Если MotoLean помогает вам ездить лучше, поддержите проект: каждый донат идёт на новые функции и тестовые выезды.",
+      donAppT: "Чаевые в приложении", donAppD: "Настройки → Чаевые. Разовый донат через ваш аккаунт App Store — регистрироваться нигде не нужно.",
+      donT1: "Кофе $0.99", donT2: "Полный бак $4.99", donT3: "Трек-день $19.99", donT4: "Полное ТО $50", donAppGo: "Скачать MotoLean →",
+      donPatD: "Ежемесячная поддержка. Ранние сборки, заметки с выездов и голос в выборе следующих функций.",
+      donBooD: "Разово или ежемесячно, с картами, которые работают в России и СНГ.",
+      donGo: "Поддержать →", donSoon: "Скоро", donNote: "Донаты добровольные и ничего не открывают: все функции бесплатны для всех.",
       finStatus: "App Store · на проверке · скоро", finSupport: "Поддержка и вопросы",
       safety: "Надёжно закрепите телефон и смотрите на дорогу. MotoLean — не устройство безопасности. Ездите в пределах своих возможностей и правил; пределы ищите только на закрытой трассе.",
       privacy: "Политика конфиденциальности", support: "Поддержка", contact: "Связаться", credit: "Фото с Unsplash:", credit3: "фото трассы",
