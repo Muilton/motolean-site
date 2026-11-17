@@ -3,12 +3,12 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta property="og:title" content="MotoLean · Corner Coach">
-<meta property="og:description" content="Lean angle meter and voice corner coach for motorcycles. Free for iPhone.">
+<meta property="og:description" content="Not a toy: a mathematical model of every corner, spoken in your helmet. Free for iPhone.">
 <meta property="og:image" content="img/icon.jpg">
 <link rel="icon" href="img/icon.jpg">
 <meta charset="utf-8">
 <title>MotoLean Corner Coach</title>
-<meta name="description" content="Lean angle meter and voice corner coach for motorcycles. After every corner MotoLean says your lean, a score and one tip.">
+<meta name="description" content="Not a toy: a physics and data model of every corner you ride. 100 Hz sensor fusion, handlebar geometry and a Kalman-filtered trajectory, scored on 12 criteria and spoken in your helmet.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800;1,900&family=Fira+Sans+Extra+Condensed:ital,wght@0,700;0,800;1,800;1,900&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
@@ -113,7 +113,38 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 @media (max-width: 760px) { .strip { grid-template-columns: 1fr 1fr; } .strip div:nth-child(3) { border-left: 0; } .strip div:nth-child(n+3) { border-top: 1px solid var(--line); } }
 
 section { padding-block: 90px; }
-.hero .top > *, .voice-grid > *, .tower-grid > *, .classes > *, .free > *, .strip > *, .tl > *, .point > * { min-width: 0; }
+.hero .top > *, .pipe > *, .proof > *, .voice-grid > *, .tower-grid > *, .classes > *, .free > *, .strip > *, .tl > *, .point > * { min-width: 0; }
+
+/* ---------- model ---------- */
+.model { background: linear-gradient(180deg, var(--asphalt), var(--asphalt-2) 40%, var(--asphalt)); }
+.pipe { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; margin-top: 46px; border: 1px solid var(--line); border-radius: 22px; overflow: hidden; }
+.stage-card { position: relative; padding: 24px 22px 22px; border-left: 1px solid var(--line); background: var(--asphalt-2); display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.stage-card:first-child { border-left: 0; }
+.stage-card::after { content: "→"; position: absolute; right: -9px; top: 26px; z-index: 2; font: 700 16px/1 var(--mono); color: var(--spark); background: var(--asphalt-2); padding: 2px 0; }
+.stage-card:last-child::after { content: none; }
+.stage-card .n { font: 900 italic 46px/.8 var(--display); color: transparent; -webkit-text-stroke: 1.5px var(--spark); }
+.stage-card h3 { font-size: 25px; font-weight: 800; letter-spacing: .02em; line-height: 1; }
+.stage-card p { margin: 0; color: var(--ink-dim); font-size: 15px; line-height: 1.5; }
+.stage-card code { margin-top: auto; display: block; font: 500 12.5px/1.5 var(--mono); color: var(--gold); background: var(--asphalt); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; overflow-wrap: anywhere; }
+@media (max-width: 1100px) { .pipe { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stage-card { border-left: 0; border-top: 1px solid var(--line); } .stage-card:nth-child(-n+2) { border-top: 0; } .stage-card:nth-child(even) { border-left: 1px solid var(--line); } .stage-card:last-child { grid-column: 1 / -1; } .stage-card::after { content: none; } }
+@media (max-width: 620px) { .pipe { grid-template-columns: 1fr; } .stage-card:nth-child(even) { border-left: 0; } .stage-card:nth-child(2) { border-top: 1px solid var(--line); } }
+.proof { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 18px; margin-top: 18px; }
+.proof > div { border: 1px solid var(--line); border-radius: 22px; background: var(--asphalt-2); padding: 26px 24px; min-width: 0; }
+.proof .tag { font: 800 italic 14px/1 var(--display); letter-spacing: .16em; text-transform: uppercase; color: var(--green); }
+.proof h3 { font-size: 30px; font-weight: 800; margin-top: 10px; line-height: 1; }
+.proof p { color: var(--ink-dim); font-size: 15px; margin: 10px 0 0; }
+.proof .big { font: 900 italic clamp(54px, 7vw, 92px)/.9 var(--display); margin-top: 18px; white-space: nowrap; }
+.proof .formula { font: 500 13px/1.4 var(--mono); color: var(--gold); margin-top: 12px; }
+.bars { display: grid; gap: 10px; margin-top: 18px; }
+.bars .b { display: grid; grid-template-columns: 128px minmax(0, 1fr) 54px; gap: 12px; align-items: center; font: 600 13px/1.2 var(--body); color: var(--ink-dim); }
+.bars .track { position: relative; height: 16px; border-radius: 4px; background: var(--asphalt-3); }
+.bars .band { position: absolute; top: -4px; bottom: -4px; left: calc(34 / 45 * 100%); width: calc(2 / 45 * 100%); background: repeating-linear-gradient(-45deg, rgba(48, 209, 88, .55) 0 4px, rgba(48, 209, 88, .15) 4px 8px); border-radius: 3px; z-index: 1; }
+.bars .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; width: calc(var(--v) / 45 * 100%); background: var(--c); }
+.bars .val { font: 700 14px/1 var(--mono); color: var(--ink); text-align: right; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 14px; font: 500 12px/1.3 var(--mono); color: var(--ink-dim); text-transform: uppercase; letter-spacing: .04em; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 6px; }
+@media (max-width: 900px) { .proof { grid-template-columns: 1fr; } }
+@media (max-width: 460px) { .bars .b { grid-template-columns: 96px minmax(0, 1fr) 46px; gap: 8px; } }
 
 /* ---------- voice ---------- */
 .voice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; margin-top: 10px; }
@@ -206,10 +237,10 @@ footer .mail { font-family: var(--mono); color: var(--ink); user-select: all; }
   <div class="wrap">
     <a class="brand" href="#top" aria-label="MotoLean"><img src="img/icon.jpg" alt=""><b>Moto<span>Lean</span></b></a>
     <nav class="nav" aria-label="Sections">
+      <a href="#model" data-i18n="navModel">The model</a>
       <a href="#voice" data-i18n="navVoice">Voice coach</a>
       <a href="#grid" data-i18n="navGrid">Features</a>
       <a href="#bikes" data-i18n="navBikes">Bikes</a>
-      <a href="#free" data-i18n="navFree">Free</a>
     </nav>
     <div class="lang" role="group" aria-label="Language">
       <button type="button" id="lang-en" data-lang="en" aria-pressed="true">EN</button>
@@ -224,11 +255,11 @@ footer .mail { font-family: var(--mono); color: var(--ink); user-select: all; }
     <div class="wrap top">
       <div>
         <div class="hud"><span class="live" data-i18n="hudLive">Live</span><span>T7 · <b>R</b></span><span data-i18n-html="hudLean">Peak <b>44°</b></span><span data-i18n-html="hudScore">Score <b>95</b></span></div>
-        <h1><span class="l" data-i18n="h1a">Lean in.</span><span class="l" data-i18n="h1b">Listen.</span><span class="l"><em data-i18n="h1c">Ride better.</em></span></h1>
-        <p class="lead" data-i18n="heroLead">MotoLean turns your iPhone into a lean angle meter and a corner coach. A few seconds after every corner it speaks into your helmet: your lean, a score out of 100 and one thing to fix. Hands stay on the bars.</p>
+        <h1><span class="l" data-i18n="h1a">Physics.</span><span class="l" data-i18n="h1b">Data.</span><span class="l"><em data-i18n="h1c">Cleaner corners.</em></span></h1>
+        <p class="lead" data-i18n="heroLead">Not a toy lean meter. MotoLean builds a mathematical model of every corner you ride: 100&nbsp;Hz sensor fusion, the geometry of your handlebars and a Kalman-filtered trajectory. Seconds after the exit it tells you in your helmet what the numbers say: your lean, a score out of 100 and the one thing to fix.</p>
         <div class="actions">
           <a class="cta" href="#get"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.6 1.3-.1 1.7-.8 3.3-.8 1.5 0 2 .8 3.3.8 1.4 0 2.2-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.5-1-2.5-4.1zM13.9 5c.7-.9 1.2-2 1.1-3.2-1 0-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg><span data-i18n="ctaStore">App Store</span></a>
-          <a class="cta ghost" href="#grid" data-i18n="ctaTour">See what it does</a>
+          <a class="cta ghost" href="#model" data-i18n="ctaTour">How the model works</a>
         </div>
         <p class="soon" data-i18n="soon">Free for iPhone · iOS 17 or later · coming to the App Store soon</p>
       </div>
@@ -260,28 +291,64 @@ footer .mail { font-family: var(--mono); color: var(--ink); user-select: all; }
     <div class="kerb" aria-hidden="true"></div>
     <div class="wrap">
       <div class="strip">
-        <div><b>0</b><span data-i18n="s1">taps during a ride</span></div>
-        <div><b>4×25</b><span data-i18n="s2">points: braking, tip-in, apex, throttle</span></div>
-        <div><b>25&nbsp;Hz</b><span data-i18n="s3">motion sensors, fused with GPS</span></div>
-        <div><b>13</b><span data-i18n="s4">languages, voice included</span></div>
+        <div><b>100&nbsp;Hz</b><span data-i18n="s1">raw motion log behind every ride</span></div>
+        <div><b>12</b><span data-i18n="s2">criteria per corner across 4 phases</span></div>
+        <div><b>≈1°</b><span data-i18n="s3">from turn physics on road test rides</span></div>
+        <div><b>0</b><span data-i18n="s4">taps during a ride</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="model" id="model">
+    <div class="wrap">
+      <span class="eyebrow" data-i18n="modelEyebrow">Not a toy</span>
+      <h2 style="margin-top:18px" data-i18n-html="modelTitle">A mathematical model <em>of every corner</em></h2>
+      <p class="lead" data-i18n="modelLead">Most lean apps read one number off the phone. MotoLean runs a five-stage pipeline on your iPhone, measures itself against the physics of the turn, and only then gives you a score. No cloud, no guesswork.</p>
+      <div class="pipe">
+        <article class="stage-card"><span class="n">01</span><h3 data-i18n="m1t">Raw signal</h3><p data-i18n="m1">Attitude, rotation, gravity and acceleration at 100&nbsp;Hz, plus every field of every GPS fix. After the ride each 0.1&nbsp;s step is rebuilt from all readings in its window, so bar vibration can't alias into the lean.</p><code>100 Hz → 10 Hz · anti-alias</code></article>
+        <article class="stage-card"><span class="n">02</span><h3 data-i18n="m2t">Bike geometry</h3><p data-i18n="m2">Handlebar calibration finds the steering axis and the lock stops. Lean is measured in the bike's frame, then corrected for the bar angle, so tight turns read the same left and right.</p><code>tan δ = L·ω·cos φ / (v·cos ε)</code></article>
+        <article class="stage-card"><span class="n">03</span><h3 data-i18n="m3t">Time alignment</h3><p data-i18n="m3">GPS speed and course lag the motion sensors by about a second. MotoLean measures that lag on each ride and shifts every fix back to the moment it describes.</p><code>Δt course ≈ 1.1 s · position 0.3 s</code></article>
+        <article class="stage-card"><span class="n">04</span><h3 data-i18n="m4t">Kalman filter</h3><p data-i18n="m4">Speed and accelerometer bias are estimated with a Kalman filter and a backward RTS smoother; gyro, speed and GPS fuse into a 10&nbsp;Hz trajectory. The accelerometer is used only if it passes a regression test against GPS.</p><code>x = [v, b]ᵀ · RTS · r ≥ 0.6</code></article>
+        <article class="stage-card"><span class="n">05</span><h3 data-i18n="m5t">Corner model</h3><p data-i18n="m5">Curvature from the gyro locates the apex; braking, tip-in and throttle are found on a distance axis around it. Twelve criteria give four phase scores, each with a confidence level.</p><code>κ = Δψ / Δs · apex: κ ≥ 0.8 κmax</code></article>
+      </div>
+      <div class="proof">
+        <div>
+          <span class="tag" data-i18n="v1tag">Validated · road</span>
+          <h3 data-i18n="v1t">Lean matches the physics of the turn</h3>
+          <div class="big mono">0.96–1.00</div>
+          <p data-i18n="v1">Measured lean divided by the lean that speed and turn rate demand, in steady corners on four road test rides. No fudge factors: the old empirical corrections were removed once the model matched.</p>
+          <div class="formula">φ_phys = atan(v·ω / g)</div>
+        </div>
+        <div>
+          <span class="tag" data-i18n="v2tag">Validated · gymkhana</span>
+          <h3 data-i18n="v2t">Figure-eights at 14–15 km/h</h3>
+          <div class="bars" role="img" aria-label="Peak lean in figure-eights: 42.4 and 41.0 degrees before the steering correction, 33.4 and 33.5 degrees after it; turn physics gives 34 to 36 degrees.">
+            <div class="b"><span data-i18n="b1">Phone, left</span><span class="track"><span class="band"></span><span class="fill" style="--v:42.4;--c:#5b5852"></span></span><span class="val">42.4°</span></div>
+            <div class="b"><span data-i18n="b2">Phone, right</span><span class="track"><span class="band"></span><span class="fill" style="--v:41.0;--c:#5b5852"></span></span><span class="val">41.0°</span></div>
+            <div class="b"><span data-i18n="b3">Model, left</span><span class="track"><span class="band"></span><span class="fill" style="--v:33.4;--c:var(--left)"></span></span><span class="val">33.4°</span></div>
+            <div class="b"><span data-i18n="b4">Model, right</span><span class="track"><span class="band"></span><span class="fill" style="--v:33.5;--c:var(--spark)"></span></span><span class="val">33.5°</span></div>
+          </div>
+          <div class="legend"><span><i style="background:#5b5852"></i><span data-i18n="lg1">Before steering correction</span></span><span><i style="background:rgba(48,209,88,.55)"></i><span data-i18n="lg2">Turn physics 34–36°</span></span></div>
+          <p data-i18n="v2">With the phone on the bars, turning the handlebars tilts the phone and inflates the lean by 8–9°. The steering model removes it, and both sides land within a degree of each other.</p>
+        </div>
       </div>
     </div>
   </section>
 
   <section id="voice">
     <div class="wrap">
-      <span class="eyebrow" data-i18n="voiceEyebrow">Instant voice feedback</span>
+      <span class="eyebrow" data-i18n="voiceEyebrow">From data to one sentence</span>
       <h2 style="margin-top:18px" data-i18n-html="voiceTitle">Your coach rides <em>in the helmet</em></h2>
       <div class="voice-grid">
         <div class="timeline" aria-label="What happens after a corner">
           <div class="tl"><span class="t">−4.2 s</span><p data-i18n-html="tl1">Braking ends, tip-in<small>The bike rolls in to 41° left</small></p></div>
           <div class="tl"><span class="t">0.0 s</span><p data-i18n-html="tl2">Apex<small>Slowest point of the corner</small></p></div>
-          <div class="tl"><span class="t">+2.1 s</span><p data-i18n-html="tl3">Exit, bike stands up<small>MotoLean scores all four phases</small></p></div>
+          <div class="tl"><span class="t">+2.1 s</span><p data-i18n-html="tl3">Exit, bike stands up<small>The model scores 12 criteria in 4 phases</small></p></div>
           <div class="tl say"><span class="t">+3.0 s</span><p><span data-i18n="tl4">“41, left. 72 points. Open the throttle earlier.”</span><span class="wave" aria-hidden="true" id="wave"></span></p></div>
         </div>
         <div class="points">
           <div class="point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg><div><h3 data-i18n="p1t">Any Bluetooth headset</h3><p data-i18n="p1">Cardo, Sena or earbuds. Prompts play over your music or dip it for a second.</p></div></div>
-          <div class="point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"/><path d="m9 12 2 2 4-4"/></svg><div><h3 data-i18n="p2t">One tip, not a lecture</h3><p data-i18n="p2">Only the weakest phase of the corner gets a tip, so you know exactly what to try next time.</p></div></div>
+          <div class="point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"/><path d="m9 12 2 2 4-4"/></svg><div><h3 data-i18n="p2t">One tip, not a lecture</h3><p data-i18n="p2">The model ranks the four phases and speaks only about the weakest, so you know exactly what to try next time.</p></div></div>
           <div class="point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg><div><h3 data-i18n="p3t">Screen off, pocket or mount</h3><p data-i18n="p3">Records and speaks in the background, with the ride on the Lock Screen and in the Dynamic Island.</p></div></div>
         </div>
       </div>
@@ -300,10 +367,10 @@ footer .mail { font-family: var(--mono); color: var(--ink); user-select: all; }
           <div class="tower-head"><span data-i18n="towerHead">Classification</span><span class="mono">MOTOLEAN 1.0</span></div>
           <button class="row" role="tab" id="row-dash" data-shot="dash" style="--c:#ff6b1a" aria-selected="true"><span class="pos">P1</span><span class="team"></span><span class="name" data-i18n-html="r1">Live lean<small>Gauge, max left and right, speed, corners</small></span><span class="gap">LEADER</span></button>
           <button class="row" role="tab" id="row-corner" data-shot="corner" style="--c:#30d158" aria-selected="false"><span class="pos">P2</span><span class="team"></span><span class="name" data-i18n-html="r2">Corner breakdown<small>Each phase scored, with the note on what to fix</small></span><span class="gap">+0.112</span></button>
-          <button class="row" role="tab" id="row-ride" data-shot="ride" style="--c:#3fd2ff" aria-selected="false"><span class="pos">P3</span><span class="team"></span><span class="name" data-i18n-html="r3">Ride replay<small>Smoothed route by lean, charts, GPX and CSV</small></span><span class="gap">+0.240</span></button>
+          <button class="row" role="tab" id="row-ride" data-shot="ride" style="--c:#3fd2ff" aria-selected="false"><span class="pos">P3</span><span class="team"></span><span class="name" data-i18n-html="r3">Ride replay<small>Kalman-smoothed route by lean, charts, GPX and CSV</small></span><span class="gap">+0.240</span></button>
           <button class="row" role="tab" id="row-analytics" data-shot="analytics" style="--c:#ffc35a" aria-selected="false"><span class="pos">P4</span><span class="team"></span><span class="name" data-i18n-html="r4">Progress<small>Every pass of the same corner, side by side</small></span><span class="gap">+0.391</span></button>
-          <button class="row" role="tab" id="row-profile" data-shot="profile" style="--c:#bf5af2" aria-selected="false"><span class="pos">P5</span><span class="team"></span><span class="name" data-i18n-html="r5">Rider profile<small>Left vs right, phase scores, what to train</small></span><span class="gap">+0.508</span></button>
-          <button class="row" role="tab" id="row-cal" data-shot="dash" style="--c:#e1251b" aria-selected="false"><span class="pos">P6</span><span class="team"></span><span class="name" data-i18n-html="r6">Handlebar calibration<small>True lean even with the phone turned in its mount</small></span><span class="gap">+0.733</span></button>
+          <button class="row" role="tab" id="row-profile" data-shot="profile" style="--c:#bf5af2" aria-selected="false"><span class="pos">P5</span><span class="team"></span><span class="name" data-i18n-html="r5">Rider profile<small>Left vs right balance and phase statistics across all rides</small></span><span class="gap">+0.508</span></button>
+          <button class="row" role="tab" id="row-cal" data-shot="dash" style="--c:#e1251b" aria-selected="false"><span class="pos">P6</span><span class="team"></span><span class="name" data-i18n-html="r6">Handlebar geometry<small>Steering axis, lock stops and bar-angle correction</small></span><span class="gap">+0.733</span></button>
         </div>
         <div class="phone"><img id="shot" src="img/dash.jpg" alt="MotoLean screen" width="1320" height="2868"></div>
       </div>
@@ -322,14 +389,14 @@ footer .mail { font-family: var(--mono); color: var(--ink); user-select: all; }
           <span class="tag" data-i18n="c1tag">Supersport</span>
           <h3 data-i18n="c1">Full fairing</h3>
           <svg class="bike" viewBox="0 0 400 230" data-lean="47" data-pose="tuck" role="img" aria-label="Rear view of a motorcycle leaning 47 degrees"></svg>
-          <p data-i18n="c1p">Deep leans, fast direction changes. 25 Hz sensors catch every flick.</p>
-          <div class="spec"><span>25 Hz</span><span data-i18n="c1s">Max GPS</span><span>Live Activity</span></div>
+          <p data-i18n="c1p">Deep leans, fast direction changes. The 100 Hz log catches every flick.</p>
+          <div class="spec"><span>100 Hz</span><span data-i18n="c1s">Max GPS</span><span>Live Activity</span></div>
         </article>
         <article class="class">
           <span class="tag" data-i18n="c2tag">Naked · Roadster</span>
           <h3 data-i18n="c2">Bars wide</h3>
           <svg class="bike" viewBox="0 0 400 230" data-lean="39" data-pose="upright" role="img" aria-label="Rear view of a motorcycle leaning 39 degrees"></svg>
-          <p data-i18n="c2p">Upright position, big steering input. Handlebar calibration keeps left and right honest.</p>
+          <p data-i18n="c2p">Upright position, big steering input. The steering model keeps left and right honest.</p>
           <div class="spec"><span data-i18n="c2s1">Garage</span><span data-i18n="c2s2">Bar calibration</span><span>GPX</span></div>
         </article>
         <article class="class">
@@ -349,7 +416,7 @@ footer .mail { font-family: var(--mono); color: var(--ink); user-select: all; }
       <h2 style="margin-top:18px" data-i18n-html="freeTitle">Free. Private. <em>No account.</em></h2>
       <div class="free">
         <div><h3 data-i18n="f1t">Free</h3><p data-i18n="f1">No ads, no subscription. Optional tips unlock nothing.</p></div>
-        <div><h3 data-i18n="f2t">Private</h3><p data-i18n="f2">Rides stay on your iPhone. No sign-up, no tracking.</p></div>
+        <div><h3 data-i18n="f2t">On-device</h3><p data-i18n="f2">The whole model runs on your iPhone. No cloud, no sign-up, no tracking.</p></div>
         <div><h3 data-i18n="f3t">13 languages</h3><p data-i18n="f3">English, Русский, Deutsch, Español, Français, Italiano, 日本語 and more.</p></div>
         <div><h3 data-i18n="f4t">Fair scoring</h3><p data-i18n="f4">Scores rate technique. More speed or lean never earns points.</p></div>
       </div>
@@ -361,7 +428,7 @@ footer .mail { font-family: var(--mono); color: var(--ink); user-select: all; }
     <div class="wrap">
       <span class="eyebrow" data-i18n="finEyebrow">Lights out</span>
       <h2 style="margin-top:18px" data-i18n-html="finTitle">Every corner <em>counts</em></h2>
-      <p class="lead" style="margin-inline:auto" data-i18n="finLead">MotoLean is free for iPhone. It is in review now and will be on the App Store soon.</p>
+      <p class="lead" style="margin-inline:auto" data-i18n="finLead">A full corner model, free for iPhone. MotoLean is in review now and will be on the App Store soon.</p>
       <div class="actions">
         <a class="cta" href="https://muilton.github.io/motolean-legal/" data-i18n="finSupport">Support and FAQ</a>
       </div>
@@ -384,42 +451,55 @@ footer .mail { font-family: var(--mono); color: var(--ink); user-select: all; }
 (() => {
   const I18N = {
     ru: {
-      navVoice: "Голос", navGrid: "Возможности", navBikes: "Мотоциклы", navFree: "Бесплатно",
-      ctaShort: "Скачать", ctaStore: "App Store", ctaTour: "Что умеет",
+      navModel: "Модель", navVoice: "Голос", navGrid: "Возможности", navBikes: "Мотоциклы",
+      ctaShort: "Скачать", ctaStore: "App Store", ctaTour: "Как устроена модель",
       hudLive: "Live", hudLean: "Пик <b>44°</b>", hudScore: "Оценка <b>95</b>",
-      h1a: "Наклоняйся.", h1b: "Слушай.", h1c: "Едь лучше.",
-      heroLead: "MotoLean превращает iPhone в измеритель наклона и тренера поворотов. Через пару секунд после каждого поворота он говорит в шлем: наклон, оценку из 100 и что исправить. Руки остаются на руле.",
+      h1a: "Физика.", h1b: "Данные.", h1c: "Чистые повороты.",
+      heroLead: "Не игрушечный креномер. MotoLean строит математическую модель каждого поворота: датчики 100 Гц, геометрия руля и траектория с фильтром Калмана. Через пару секунд после выхода он говорит в шлем, что показали цифры: наклон, оценку из 100 и главное, что исправить.",
       soon: "Бесплатно для iPhone · iOS 17 и новее · скоро в App Store",
       lean: "Наклон", sayWhen: "через 3 с после выхода",
-      s1: "нажатий во время езды", s2: "баллов: торможение, закладка, апекс, газ", s3: "датчики движения вместе с GPS", s4: "языков, включая голос",
-      voiceEyebrow: "Голосовой фидбек сразу", voiceTitle: "Тренер едет <em>в твоём шлеме</em>",
+      s1: "сырой лог датчиков в каждой поездке", s2: "критериев на поворот в 4 фазах", s3: "от физики поворота в тестовых поездках по дороге", s4: "нажатий во время езды",
+      modelEyebrow: "Не игрушка", modelTitle: "Математическая модель <em>каждого поворота</em>",
+      modelLead: "Обычные приложения читают из телефона одно число. MotoLean прогоняет данные через пять этапов прямо на iPhone, сверяет себя с физикой поворота и только потом ставит оценку. Без облака и без догадок.",
+      m1t: "Сырой сигнал", m1: "Ориентация, вращение, гравитация и ускорение 100 раз в секунду плюс все поля каждого фикса GPS. После поездки каждый шаг 0,1 с собирается из всех показаний своего окна, и вибрация руля не попадает в наклон.",
+      m2t: "Геометрия мотоцикла", m2: "Калибровка руля находит рулевую ось и упоры. Наклон считается в осях мотоцикла и поправляется на угол руля, поэтому тугие повороты влево и вправо читаются одинаково.",
+      m3t: "Синхронизация", m3: "Скорость и курс GPS отстают от датчиков примерно на секунду. MotoLean измеряет это запаздывание в каждой поездке и сдвигает каждый фикс к моменту, который он описывает.",
+      m4t: "Фильтр Калмана", m4: "Скорость и смещение акселерометра оцениваются фильтром Калмана с обратным сглаживанием RTS; гироскоп, скорость и GPS сводятся в траекторию 10 Гц. Акселерометр используется, только если проходит регрессионную проверку по GPS.",
+      m5t: "Модель поворота", m5: "Кривизна по гироскопу находит апекс; торможение, закладка и газ ищутся на оси расстояния вокруг него. Двенадцать критериев дают оценки четырёх фаз, у каждой — уровень достоверности.",
+      v1tag: "Проверено · дорога", v1t: "Наклон совпадает с физикой поворота",
+      v1: "Измеренный наклон, делённый на наклон, которого требуют скорость и скорость поворота, в установившихся поворотах четырёх тестовых поездок по дороге. Без подгоночных коэффициентов: эмпирические поправки убраны, когда модель совпала.",
+      v2tag: "Проверено · джимхана", v2t: "Восьмёрки на 14–15 км/ч",
+      b1: "Телефон, влево", b2: "Телефон, вправо", b3: "Модель, влево", b4: "Модель, вправо",
+      lg1: "Без поправки на руль", lg2: "Физика поворота 34–36°",
+      v2: "Телефон на руле наклоняется вместе с поворотом руля и добавляет к наклону 8–9°. Модель руля это убирает, и стороны сходятся в пределах градуса.",
+      voiceEyebrow: "От данных к одной фразе", voiceTitle: "Тренер едет <em>в твоём шлеме</em>",
       tl1: "Конец торможения, закладка<small>Мотоцикл ложится до 41° влево</small>",
       tl2: "Апекс<small>Самая низкая скорость в повороте</small>",
-      tl3: "Выход, мотоцикл поднимается<small>MotoLean оценивает все четыре фазы</small>",
+      tl3: "Выход, мотоцикл поднимается<small>Модель оценивает 12 критериев в 4 фазах</small>",
       tl4: "«41, влево. 72 балла. Открывайся раньше.»",
       p1t: "Любая Bluetooth-гарнитура", p1: "Cardo, Sena или наушники. Подсказки звучат поверх музыки или приглушают её на секунду.",
-      p2t: "Один совет, а не лекция", p2: "Совет только по самой слабой фазе поворота: ясно, что попробовать в следующий раз.",
+      p2t: "Один совет, а не лекция", p2: "Модель сравнивает четыре фазы и говорит только о самой слабой: ясно, что попробовать в следующий раз.",
       p3t: "Экран выключен", p3: "Пишет и говорит в фоне, поездка видна на экране блокировки и в Dynamic Island.",
       gridEyebrow: "Стартовая решётка", gridTitle: "Всё, что после <em>клетчатого флага</em>", gridLead: "Выберите строку, чтобы увидеть настоящий экран.",
       towerHead: "Классификация",
       r1: "Наклон вживую<small>Прибор, максимумы влево и вправо, скорость, повороты</small>",
       r2: "Разбор поворота<small>Оценка каждой фазы и что исправить</small>",
-      r3: "Повтор поездки<small>Трек в цвете наклона, графики, GPX и CSV</small>",
+      r3: "Повтор поездки<small>Трек со сглаживанием Калмана в цвете наклона, графики, GPX и CSV</small>",
       r4: "Прогресс<small>Все проезды одного поворота рядом</small>",
-      r5: "Профиль райдера<small>Левые и правые, оценки фаз, что тренировать</small>",
-      r6: "Калибровка руля<small>Точный наклон, даже если телефон развёрнут в креплении</small>",
+      r5: "Профиль райдера<small>Баланс лево/право и статистика фаз по всем поездкам</small>",
+      r6: "Геометрия руля<small>Рулевая ось, упоры и поправка на угол руля</small>",
       bikesEyebrow: "Парк-ферме", bikesTitle: "Спорт, нейкед <em>или трек-день</em>",
       bikesLead: "Добавьте в Гараж все мотоциклы. У каждого своя калибровка руля, поэтому смена мотоцикла не стоит точности.",
-      c1tag: "Суперспорт", c1: "Полный пластик", c1p: "Глубокие наклоны и быстрые перекладки. Датчики 25 Гц ловят каждую.", c1s: "GPS макс.",
-      c2tag: "Нейкед · Родстер", c2: "Широкий руль", c2p: "Посадка прямо, большие углы руля. Калибровка руля держит левое и правое честными.", c2s1: "Гараж", c2s2: "Калибровка руля",
+      c1tag: "Суперспорт", c1: "Полный пластик", c1p: "Глубокие наклоны и быстрые перекладки. Лог 100 Гц ловит каждую.", c1s: "GPS макс.",
+      c2tag: "Нейкед · Родстер", c2: "Широкий руль", c2p: "Посадка прямо, большие углы руля. Модель руля держит левое и правое честными.", c2s1: "Гараж", c2s2: "Калибровка руля",
       c3tag: "Трек-день", c3: "Колено в асфальт", c3p: "Сессия за сессией по тем же поворотам. Видно, какой проезд был чище, по фазам.", c3s1: "Прогресс", c3s2: "Повторные повороты",
       freeEyebrow: "Без подвоха", freeTitle: "Бесплатно. Приватно. <em>Без аккаунта.</em>",
       f1t: "Бесплатно", f1: "Без рекламы и подписок. Чаевые по желанию ничего не открывают.",
-      f2t: "Приватно", f2: "Поездки остаются на iPhone. Без регистрации и слежки.",
+      f2t: "На устройстве", f2: "Вся модель работает на iPhone. Без облака, регистрации и слежки.",
       f3t: "13 языков", f3: "Русский, English, Українська, Deutsch, Español, Français, 日本語 и другие.",
       f4t: "Честная оценка", f4: "Оценивается техника. Большая скорость или наклон баллов не добавляют.",
       finEyebrow: "Огни гаснут", finTitle: "Каждый поворот <em>на счету</em>",
-      finLead: "MotoLean бесплатен для iPhone. Сейчас он на проверке и скоро появится в App Store.",
+      finLead: "Полная модель поворота, бесплатно для iPhone. MotoLean сейчас на проверке и скоро появится в App Store.",
       finSupport: "Поддержка и вопросы",
       safety: "Надёжно закрепите телефон и смотрите на дорогу. MotoLean — не устройство безопасности. Ездите в пределах своих возможностей и правил; пределы ищите только на закрытой трассе.",
       privacy: "Политика конфиденциальности", support: "Поддержка",
